@@ -1,8 +1,8 @@
 package platform
 
 import (
-	"github.com/charmingruby/pack/internal/platform/http/endpoint"
-	"github.com/charmingruby/pack/pkg/database/postgres"
+	"github.com/charmingruby/clowork/internal/platform/http/endpoint"
+	"github.com/charmingruby/clowork/pkg/database/postgres"
 
 	"github.com/gin-gonic/gin"
 )

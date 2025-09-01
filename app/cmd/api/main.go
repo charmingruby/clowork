@@ -7,11 +7,11 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/charmingruby/pack/config"
-	"github.com/charmingruby/pack/internal/platform"
-	"github.com/charmingruby/pack/pkg/database/postgres"
-	"github.com/charmingruby/pack/pkg/delivery/http/rest"
-	"github.com/charmingruby/pack/pkg/telemetry/logger"
+	"github.com/charmingruby/clowork/config"
+	"github.com/charmingruby/clowork/internal/platform"
+	"github.com/charmingruby/clowork/pkg/database/postgres"
+	"github.com/charmingruby/clowork/pkg/delivery/http/rest"
+	"github.com/charmingruby/clowork/pkg/telemetry/logger"
 
 	"github.com/joho/godotenv"
 )

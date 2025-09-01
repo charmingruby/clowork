@@ -1,4 +1,4 @@
-module github.com/charmingruby/pack
+module github.com/charmingruby/clowork
 
 go 1.24.3
 

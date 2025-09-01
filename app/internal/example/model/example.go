@@ -1,6 +1,6 @@
 package model
 
-import "github.com/charmingruby/pack/pkg/core"
+import "github.com/charmingruby/clowork/pkg/core"
 
 type Example struct {
 	ID   string `json:"id"   db:"id"`

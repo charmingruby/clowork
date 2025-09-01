@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/charmingruby/pack/pkg/database/postgres"
-	"github.com/charmingruby/pack/pkg/delivery/http/rest"
+	"github.com/charmingruby/clowork/pkg/database/postgres"
+	"github.com/charmingruby/clowork/pkg/delivery/http/rest"
 	"github.com/gin-gonic/gin"
 )
 

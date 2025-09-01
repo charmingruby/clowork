@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/charmingruby/pack/internal/example/model"
-	"github.com/charmingruby/pack/pkg/database/postgres"
+	"github.com/charmingruby/clowork/internal/example/model"
+	"github.com/charmingruby/clowork/pkg/database/postgres"
 	"github.com/jmoiron/sqlx"
 )
 

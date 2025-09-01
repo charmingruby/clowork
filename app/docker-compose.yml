@@ -7,9 +7,9 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=pack
+      - POSTGRES_DB=clowork
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d pack"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d clowork"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -19,11 +19,14 @@ services:
     container_name: migrate
     volumes:
       - ./db/migration:/migrations
-    command: [
-      "-path", "/migrations",
-      "-database", "postgres://postgres:postgres@db:5432/pack?sslmode=disable",
-      "up"
-    ]
+    command:
+      [
+        "-path",
+        "/migrations",
+        "-database",
+        "postgres://postgres:postgres@db:5432/clowork?sslmode=disable",
+        "up",
+      ]
     depends_on:
       db:
         condition: service_healthy
@@ -37,6 +40,6 @@ services:
       - "3000:3000"
     environment:
       - REST_SERVER_PORT: 3000
-      - POSTGRES_URL: "postgres://postgres:postgres@db:5432/pack?sslmode=disable"
+      - POSTGRES_URL: "postgres://postgres:postgres@db:5432/clowork?sslmode=disable"
     depends_on:
       - migrate

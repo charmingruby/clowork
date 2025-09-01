@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/charmingruby/pack/internal/example/model"
+	"github.com/charmingruby/clowork/internal/example/model"
 )
 
 type ExampleRepo interface {

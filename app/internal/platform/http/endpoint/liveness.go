@@ -1,7 +1,7 @@
 package endpoint
 
 import (
-	"github.com/charmingruby/pack/pkg/delivery/http/rest"
+	"github.com/charmingruby/clowork/pkg/delivery/http/rest"
 	"github.com/gin-gonic/gin"
 )
 
