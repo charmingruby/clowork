@@ -5,7 +5,7 @@ on:
   pull_request:
 
 env:
-  IMAGE_NAME: charmingruby/pack
+  IMAGE_NAME: charmingruby/clowork
 
 jobs:
   release-image:
