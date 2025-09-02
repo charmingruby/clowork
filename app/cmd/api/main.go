@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/charmingruby/clowork/config"
+	"github.com/charmingruby/clowork/internal/account"
 	"github.com/charmingruby/clowork/internal/platform"
 	"github.com/charmingruby/clowork/pkg/database/postgres"
 	"github.com/charmingruby/clowork/pkg/delivery/http/rest"
@@ -37,15 +38,24 @@ func main() {
 
 	log.Info("log level configured", "level", logLevel)
 
+	log.Info("connecting to Postgres...")
+
 	db, err := postgres.New(log, cfg.PostgresURL)
 	if err != nil {
-		log.Error("failed to loading environment variables", "error", err)
+		log.Error("failed connect to Postgres", "error", err)
 		failAndExit(log, nil, nil)
 	}
+
+	log.Info("connected to Postgres successfully")
 
 	srv, r := rest.New(cfg.RestServerPort)
 
 	platform.New(r, db)
+
+	if err := account.New(db.Conn); err != nil {
+		log.Error("failed to setup account module", "error", err)
+		failAndExit(log, nil, db)
+	}
 
 	go func() {
 		log.Info("REST server is running...", "port", cfg.RestServerPort)
