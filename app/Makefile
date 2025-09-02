@@ -21,7 +21,7 @@ new-mig:
 ###################
 .PHONY: mock
 mock:
-	mockery --output test/gen/example/mocks --dir internal/example --all\
+	mockery --output test/gen/account/mocks --dir internal/account --all
 
 .PHONY: test
 test: mock
