@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS room_members (
     room_id VARCHAR NOT NULL,
     user_id VARCHAR NOT NULL,
     status VARCHAR NOT NULL,
+    role VARCHAR NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP,
 
