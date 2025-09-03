@@ -7,7 +7,7 @@ import (
 	"github.com/charmingruby/clowork/pkg/core"
 )
 
-func (u *UseCase) SignUp(ctx context.Context, in SignUpInput) error {
+func (u UseCase) SignUp(ctx context.Context, in SignUpInput) error {
 	userExists, err := u.repo.FindByNickname(ctx, in.Nickname)
 
 	if err != nil {
