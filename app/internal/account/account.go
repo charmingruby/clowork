@@ -3,7 +3,7 @@ package account
 import (
 	"github.com/charmingruby/clowork/internal/account/repository/postgres"
 	"github.com/charmingruby/clowork/internal/account/usecase"
-	"github.com/charmingruby/clowork/pkg/crypto"
+	"github.com/charmingruby/clowork/pkg/crypto/bcrypt"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -13,7 +13,7 @@ func New(db *sqlx.DB) error {
 		return err
 	}
 
-	hasher := crypto.NewBcryptHasher()
+	hasher := bcrypt.NewHasher()
 
 	usecase.New(repo, hasher)
 

@@ -11,11 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var ()
-
 func TestSignIn(t *testing.T) {
 	ctx := context.Background()
-
 	dummyNickname := "gustavo"
 	dummyPassword := "123456"
 	dummyHash := "hashed-pass"

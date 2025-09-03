@@ -1,18 +1,18 @@
-package crypto
+package bcrypt
 
 import "golang.org/x/crypto/bcrypt"
 
-type BcryptHasher struct{}
+type Hasher struct{}
 
-func NewBcryptHasher() BcryptHasher {
-	return BcryptHasher{}
+func NewHasher() Hasher {
+	return Hasher{}
 }
 
-func (c BcryptHasher) Compare(plain, hash string) bool {
+func (c Hasher) Compare(plain, hash string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(plain)) == nil
 }
 
-func (c BcryptHasher) Hash(plain string) (string, error) {
+func (c Hasher) Hash(plain string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(plain), 12)
 	if err != nil {
 		return "", err
