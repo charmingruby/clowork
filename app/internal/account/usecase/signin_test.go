@@ -1,7 +1,6 @@
 package usecase_test
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -9,10 +8,11 @@ import (
 	"github.com/charmingruby/clowork/internal/account/usecase"
 	"github.com/charmingruby/clowork/pkg/core"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSignIn(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 	dummyNickname := "gustavo"
 	dummyPassword := "123456"
 	dummyHash := "hashed-pass"
@@ -31,7 +31,7 @@ func TestSignIn(t *testing.T) {
 			Password: dummyPassword,
 		})
 
-		assert.Error(t, err)
+		require.Error(t, err)
 
 		var targetErr *core.DatabaseError
 		assert.ErrorAs(t, err, &targetErr)
@@ -50,7 +50,7 @@ func TestSignIn(t *testing.T) {
 			Password: dummyPassword,
 		})
 
-		assert.Error(t, err)
+		require.Error(t, err)
 
 		var targetErr *core.NotFoundError
 		assert.ErrorAs(t, err, &targetErr)
@@ -74,7 +74,7 @@ func TestSignIn(t *testing.T) {
 			Password: dummyPassword,
 		})
 
-		assert.Error(t, err)
+		require.Error(t, err)
 
 		var targetErr *core.InvalidCredentialsError
 		assert.ErrorAs(t, err, &targetErr)

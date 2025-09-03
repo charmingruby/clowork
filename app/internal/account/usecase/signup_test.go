@@ -1,7 +1,6 @@
 package usecase_test
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -10,10 +9,11 @@ import (
 	"github.com/charmingruby/clowork/pkg/core"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_SignUp(t *testing.T) {
-	ctx := context.Background()
+	ctx := t.Context()
 	dummyNickname := "gustavo"
 	dummyPassword := "123456"
 	dummyHash := "hashed-pass"
@@ -32,7 +32,7 @@ func Test_SignUp(t *testing.T) {
 			Password: dummyPassword,
 		})
 
-		assert.Error(t, err)
+		require.Error(t, err)
 
 		var targetErr *core.DatabaseError
 		assert.ErrorAs(t, err, &targetErr)
@@ -51,7 +51,7 @@ func Test_SignUp(t *testing.T) {
 			Password: dummyPassword,
 		})
 
-		assert.Error(t, err)
+		require.Error(t, err)
 
 		var targetErr *core.ConflictError
 		assert.ErrorAs(t, err, &targetErr)
@@ -75,7 +75,7 @@ func Test_SignUp(t *testing.T) {
 			Password: dummyPassword,
 		})
 
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.EqualError(t, err, "hash error")
 	})
 
@@ -102,7 +102,7 @@ func Test_SignUp(t *testing.T) {
 			Password: dummyPassword,
 		})
 
-		assert.Error(t, err)
+		require.Error(t, err)
 
 		var targetErr *core.DatabaseError
 		assert.ErrorAs(t, err, &targetErr)
