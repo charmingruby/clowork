@@ -18,8 +18,12 @@ func (u *UseCase) SignUp(ctx context.Context, in SignUpInput) error {
 		return core.NewConflictError("user")
 	}
 
-	// TODO: hash pass
-	user := model.NewUser(in.Nickname, in.Password)
+	passwordHash, err := u.hasher.Hash(in.Password)
+	if err != nil {
+		return err
+	}
+
+	user := model.NewUser(in.Nickname, passwordHash)
 
 	if err := u.repo.Create(ctx, user); err != nil {
 		return core.NewDatabaseError(err)

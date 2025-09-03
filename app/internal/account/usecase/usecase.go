@@ -3,11 +3,13 @@ package usecase
 import (
 	"context"
 
+	"github.com/charmingruby/clowork/internal/account/crypto"
 	"github.com/charmingruby/clowork/internal/account/repository"
 )
 
 type UseCase struct {
-	repo repository.UserRepo
+	repo   repository.UserRepo
+	hasher crypto.Hasher
 }
 
 type SignUpInput struct {
@@ -25,6 +27,9 @@ type Service interface {
 	SignIn(ctx context.Context, in SignInInput) error
 }
 
-func New(repo repository.UserRepo) UseCase {
-	return UseCase{repo: repo}
+func New(repo repository.UserRepo, hasher crypto.Hasher) UseCase {
+	return UseCase{
+		repo:   repo,
+		hasher: hasher,
+	}
 }

@@ -17,8 +17,9 @@ func (u *UseCase) SignIn(ctx context.Context, in SignInInput) error {
 		return core.NewNotFoundError("user")
 	}
 
-	// TODO: validate decoded pass
-	if user.Password != in.Password {
+	passwordMatches := u.hasher.Compare(in.Password, user.Password)
+
+	if !passwordMatches {
 		return core.NewInvalidCredentialsError()
 	}
 
