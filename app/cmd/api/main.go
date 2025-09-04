@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/charmingruby/clowork/config"
-	"github.com/charmingruby/clowork/internal/account"
 	"github.com/charmingruby/clowork/internal/platform"
 	"github.com/charmingruby/clowork/pkg/database/postgres"
 	"github.com/charmingruby/clowork/pkg/delivery/http/rest"
@@ -51,11 +50,6 @@ func main() {
 	srv, r := rest.New(cfg.RestServerPort)
 
 	platform.New(r, db)
-
-	if err := account.New(db.Conn); err != nil {
-		log.Error("failed to setup account module", "error", err)
-		failAndExit(log, nil, db)
-	}
 
 	go func() {
 		log.Info("REST server is running...", "port", cfg.RestServerPort)

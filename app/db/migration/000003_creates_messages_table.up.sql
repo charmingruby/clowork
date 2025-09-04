@@ -6,5 +6,5 @@ CREATE TABLE IF NOT EXISTS messages (
     created_at TIMESTAMP NOT NULL,
 
     CONSTRAINT fk_room FOREIGN KEY (room_id) REFERENCES rooms(id),
-    CONSTRAINT fk_user FOREIGN KEY (sender_id) REFERENCES users(id)
+    CONSTRAINT fk_room_member FOREIGN KEY (sender_id) REFERENCES room_members(id)
 );
