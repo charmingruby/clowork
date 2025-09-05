@@ -9,10 +9,12 @@ import (
 type RoomRepo interface {
 	Create(ctx context.Context, room model.Room) error
 	FindByName(ctx context.Context, name string) (model.Room, error)
+	FindByID(ctx context.Context, id string) (model.Room, error)
 }
 
-type RoomMemberRepo interface {
-	Create(ctx context.Context, member model.RoomMember) error
+type MemberRepo interface {
+	Create(ctx context.Context, member model.Member) error
+	ExistsInRoom(ctx context.Context, roomID, nickname, hostname string) (bool, error)
 }
 
 type MessageRepo interface {
