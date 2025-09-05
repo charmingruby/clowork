@@ -60,6 +60,34 @@ func (_m *MemberRepo) ExistsInRoom(ctx context.Context, roomID string, nickname 
 	return r0, r1
 }
 
+// ExistsInRoomByID provides a mock function with given fields: ctx, memberID, roomID
+func (_m *MemberRepo) ExistsInRoomByID(ctx context.Context, memberID string, roomID string) (bool, error) {
+	ret := _m.Called(ctx, memberID, roomID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ExistsInRoomByID")
+	}
+
+	var r0 bool
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (bool, error)); ok {
+		return rf(ctx, memberID, roomID)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) bool); ok {
+		r0 = rf(ctx, memberID, roomID)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, memberID, roomID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // NewMemberRepo creates a new instance of MemberRepo. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMemberRepo(t interface {

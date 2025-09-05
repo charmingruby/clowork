@@ -37,8 +37,7 @@ type LeaveRoomInput struct {
 type Service interface {
 	CreateRoom(ctx context.Context, in CreateRoomInput) (string, error)
 	JoinRoom(ctx context.Context, in JoinRoomInput) (string, error)
-	// SendMessage(ctx context.Context, in SendMessageInput) (string, error)
-	// LeaveRoom(ctx context.Context, in LeaveRoomInput) error
+	SendMessage(ctx context.Context, in SendMessageInput) (string, error)
 }
 
 func New(

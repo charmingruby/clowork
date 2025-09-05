@@ -70,6 +70,34 @@ func (_m *Service) JoinRoom(ctx context.Context, in usecase.JoinRoomInput) (stri
 	return r0, r1
 }
 
+// SendMessage provides a mock function with given fields: ctx, in
+func (_m *Service) SendMessage(ctx context.Context, in usecase.SendMessageInput) (string, error) {
+	ret := _m.Called(ctx, in)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SendMessage")
+	}
+
+	var r0 string
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, usecase.SendMessageInput) (string, error)); ok {
+		return rf(ctx, in)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, usecase.SendMessageInput) string); ok {
+		r0 = rf(ctx, in)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, usecase.SendMessageInput) error); ok {
+		r1 = rf(ctx, in)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // NewService creates a new instance of Service. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewService(t interface {

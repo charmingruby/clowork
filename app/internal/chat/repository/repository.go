@@ -15,6 +15,7 @@ type RoomRepo interface {
 type MemberRepo interface {
 	Create(ctx context.Context, member model.Member) error
 	ExistsInRoom(ctx context.Context, roomID, nickname, hostname string) (bool, error)
+	ExistsInRoomByID(ctx context.Context, memberID, roomID string) (bool, error)
 }
 
 type MessageRepo interface {
