@@ -70,6 +70,24 @@ func (_m *Service) JoinRoom(ctx context.Context, in usecase.JoinRoomInput) (stri
 	return r0, r1
 }
 
+// LeaveRoom provides a mock function with given fields: ctx, in
+func (_m *Service) LeaveRoom(ctx context.Context, in usecase.LeaveRoomInput) error {
+	ret := _m.Called(ctx, in)
+
+	if len(ret) == 0 {
+		panic("no return value specified for LeaveRoom")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, usecase.LeaveRoomInput) error); ok {
+		r0 = rf(ctx, in)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // SendMessage provides a mock function with given fields: ctx, in
 func (_m *Service) SendMessage(ctx context.Context, in usecase.SendMessageInput) (string, error) {
 	ret := _m.Called(ctx, in)

@@ -12,38 +12,34 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_JoinRoom(t *testing.T) {
+func Test_LeaveRoom(t *testing.T) {
 	ctx := t.Context()
-	dummyNickname := "nickname"
-	dummyHostname := "macos host"
+	dummyMemberID := "member-id"
 	dummyRoomID := "room-id"
 
-	t.Run("should join room successfully", func(t *testing.T) {
+	t.Run("should leave room successfully", func(t *testing.T) {
 		s := setupTest(t)
 
 		s.roomRepo.On("FindByID", ctx, dummyRoomID).
 			Return(model.Room{ID: dummyRoomID}, nil).
 			Once()
 
-		s.memberRepo.On("ExistsInRoom", ctx, dummyRoomID, dummyNickname, dummyHostname).
-			Return(false, nil).
+		s.memberRepo.On("FindByIDInRoom", ctx, dummyMemberID, dummyRoomID).
+			Return(model.RoomMember{ID: dummyMemberID}, nil).
 			Once()
 
-		s.memberRepo.On("Create", ctx, mock.MatchedBy(func(m model.RoomMember) bool {
-			return m.Nickname == dummyNickname && m.Hostname == dummyHostname
+		s.memberRepo.On("UpdateStatus", ctx, mock.MatchedBy(func(m model.RoomMember) bool {
+			return m.Status == model.LeftStatus && m.UpdatedAt != nil
 		})).
 			Return(nil).
 			Once()
 
-		id, err := s.usecase.JoinRoom(ctx, usecase.JoinRoomInput{
+		err := s.usecase.LeaveRoom(ctx, usecase.LeaveRoomInput{
 			RoomID:   dummyRoomID,
-			Nickname: dummyNickname,
-			Hostname: dummyHostname,
+			MemberID: dummyMemberID,
 		})
 
 		require.NoError(t, err)
-
-		assert.NotEmpty(t, id)
 	})
 
 	t.Run("should return DatabaseError when FindRoomByID operation source has some error", func(t *testing.T) {
@@ -53,15 +49,12 @@ func Test_JoinRoom(t *testing.T) {
 			Return(model.Room{}, errors.New("database error")).
 			Once()
 
-		id, err := s.usecase.JoinRoom(ctx, usecase.JoinRoomInput{
+		err := s.usecase.LeaveRoom(ctx, usecase.LeaveRoomInput{
 			RoomID:   dummyRoomID,
-			Nickname: dummyNickname,
-			Hostname: dummyHostname,
+			MemberID: dummyMemberID,
 		})
 
 		require.Error(t, err)
-
-		assert.Empty(t, id)
 
 		var targetErr *core.DatabaseError
 		assert.ErrorAs(t, err, &targetErr)
@@ -74,13 +67,10 @@ func Test_JoinRoom(t *testing.T) {
 			Return(model.Room{}, nil).
 			Once()
 
-		id, err := s.usecase.JoinRoom(ctx, usecase.JoinRoomInput{
+		err := s.usecase.LeaveRoom(ctx, usecase.LeaveRoomInput{
 			RoomID:   dummyRoomID,
-			Nickname: dummyNickname,
-			Hostname: dummyHostname,
+			MemberID: dummyMemberID,
 		})
-
-		assert.Empty(t, id)
 
 		require.Error(t, err)
 
@@ -88,24 +78,21 @@ func Test_JoinRoom(t *testing.T) {
 		assert.ErrorAs(t, err, &targetErr)
 	})
 
-	t.Run("should return DatabaseError when MemberExistsInRoom operation source has some error", func(t *testing.T) {
+	t.Run("should return DatabaseError when FindMemberByIDInRoom operation source has some error", func(t *testing.T) {
 		s := setupTest(t)
 
 		s.roomRepo.On("FindByID", ctx, dummyRoomID).
 			Return(model.Room{ID: dummyRoomID}, nil).
 			Once()
 
-		s.memberRepo.On("ExistsInRoom", ctx, dummyRoomID, dummyNickname, dummyHostname).
-			Return(false, errors.New("database error")).
+		s.memberRepo.On("FindByIDInRoom", ctx, dummyMemberID, dummyRoomID).
+			Return(model.RoomMember{}, errors.New("database error")).
 			Once()
 
-		id, err := s.usecase.JoinRoom(ctx, usecase.JoinRoomInput{
+		err := s.usecase.LeaveRoom(ctx, usecase.LeaveRoomInput{
 			RoomID:   dummyRoomID,
-			Nickname: dummyNickname,
-			Hostname: dummyHostname,
+			MemberID: dummyMemberID,
 		})
-
-		assert.Empty(t, id)
 
 		require.Error(t, err)
 
@@ -113,55 +100,49 @@ func Test_JoinRoom(t *testing.T) {
 		assert.ErrorAs(t, err, &targetErr)
 	})
 
-	t.Run("should return ConflictError when member is already in the room", func(t *testing.T) {
+	t.Run("should return NotFoundError when member does not exists", func(t *testing.T) {
 		s := setupTest(t)
 
 		s.roomRepo.On("FindByID", ctx, dummyRoomID).
 			Return(model.Room{ID: dummyRoomID}, nil).
 			Once()
 
-		s.memberRepo.On("ExistsInRoom", ctx, dummyRoomID, dummyNickname, dummyHostname).
-			Return(true, nil).
+		s.memberRepo.On("FindByIDInRoom", ctx, dummyMemberID, dummyRoomID).
+			Return(model.RoomMember{}, nil).
 			Once()
 
-		id, err := s.usecase.JoinRoom(ctx, usecase.JoinRoomInput{
+		err := s.usecase.LeaveRoom(ctx, usecase.LeaveRoomInput{
 			RoomID:   dummyRoomID,
-			Nickname: dummyNickname,
-			Hostname: dummyHostname,
+			MemberID: dummyMemberID,
 		})
-
-		assert.Empty(t, id)
 
 		require.Error(t, err)
 
-		var targetErr *core.ConflictError
+		var targetErr *core.NotFoundError
 		assert.ErrorAs(t, err, &targetErr)
 	})
 
-	t.Run("should return DatabaseError when CreateRoom operation source has some error", func(t *testing.T) {
+	t.Run("should return DatabaseError when UpdateMember operation source has some error", func(t *testing.T) {
 		s := setupTest(t)
 
 		s.roomRepo.On("FindByID", ctx, dummyRoomID).
 			Return(model.Room{ID: dummyRoomID}, nil).
 			Once()
 
-		s.memberRepo.On("ExistsInRoom", ctx, dummyRoomID, dummyNickname, dummyHostname).
-			Return(false, nil).
+		s.memberRepo.On("FindByIDInRoom", ctx, dummyMemberID, dummyRoomID).
+			Return(model.RoomMember{ID: dummyMemberID}, nil).
 			Once()
 
-		s.memberRepo.On("Create", ctx, mock.MatchedBy(func(m model.RoomMember) bool {
-			return m.Nickname == dummyNickname && m.Hostname == dummyHostname
+		s.memberRepo.On("UpdateStatus", ctx, mock.MatchedBy(func(m model.RoomMember) bool {
+			return m.Status == model.LeftStatus && m.UpdatedAt != nil
 		})).
 			Return(errors.New("database error")).
 			Once()
 
-		id, err := s.usecase.JoinRoom(ctx, usecase.JoinRoomInput{
+		err := s.usecase.LeaveRoom(ctx, usecase.LeaveRoomInput{
 			RoomID:   dummyRoomID,
-			Nickname: dummyNickname,
-			Hostname: dummyHostname,
+			MemberID: dummyMemberID,
 		})
-
-		assert.Empty(t, id)
 
 		require.Error(t, err)
 

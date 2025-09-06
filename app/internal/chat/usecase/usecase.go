@@ -7,7 +7,7 @@ import (
 )
 
 type UseCase struct {
-	memberRepo  repository.MemberRepo
+	memberRepo  repository.RoomMemberRepo
 	roomRepo    repository.RoomRepo
 	messageRepo repository.MessageRepo
 }
@@ -37,11 +37,12 @@ type LeaveRoomInput struct {
 type Service interface {
 	CreateRoom(ctx context.Context, in CreateRoomInput) (string, error)
 	JoinRoom(ctx context.Context, in JoinRoomInput) (string, error)
+	LeaveRoom(ctx context.Context, in LeaveRoomInput) error
 	SendMessage(ctx context.Context, in SendMessageInput) (string, error)
 }
 
 func New(
-	memberRepo repository.MemberRepo,
+	memberRepo repository.RoomMemberRepo,
 	roomRepo repository.RoomRepo,
 	messageRepo repository.MessageRepo,
 ) UseCase {

@@ -9,14 +9,14 @@ import (
 
 type suite struct {
 	roomRepo    *mocks.RoomRepo
-	memberRepo  *mocks.MemberRepo
+	memberRepo  *mocks.RoomMemberRepo
 	messageRepo *mocks.MessageRepo
 	usecase     usecase.Service
 }
 
 func setupTest(t *testing.T) suite {
 	roomRepo := mocks.NewRoomRepo(t)
-	memberRepo := mocks.NewMemberRepo(t)
+	memberRepo := mocks.NewRoomMemberRepo(t)
 	messageRepo := mocks.NewMessageRepo(t)
 
 	usecase := usecase.New(memberRepo, roomRepo, messageRepo)

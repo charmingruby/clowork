@@ -12,10 +12,11 @@ type RoomRepo interface {
 	FindByID(ctx context.Context, id string) (model.Room, error)
 }
 
-type MemberRepo interface {
-	Create(ctx context.Context, member model.Member) error
+type RoomMemberRepo interface {
+	Create(ctx context.Context, member model.RoomMember) error
 	ExistsInRoom(ctx context.Context, roomID, nickname, hostname string) (bool, error)
-	ExistsInRoomByID(ctx context.Context, memberID, roomID string) (bool, error)
+	FindByIDInRoom(ctx context.Context, memberID, roomID string) (model.RoomMember, error)
+	UpdateStatus(ctx context.Context, member model.RoomMember) error
 }
 
 type MessageRepo interface {

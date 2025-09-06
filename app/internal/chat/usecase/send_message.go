@@ -18,13 +18,13 @@ func (u UseCase) SendMessage(ctx context.Context, in SendMessageInput) (string, 
 		return "", core.NewNotFoundError("room")
 	}
 
-	member, err := u.memberRepo.ExistsInRoomByID(ctx, in.SenderID, in.RoomID)
+	member, err := u.memberRepo.FindByIDInRoom(ctx, in.SenderID, in.RoomID)
 
 	if err != nil {
 		return "", core.NewDatabaseError(err)
 	}
 
-	if !member {
+	if member.ID == "" {
 		return "", core.NewNotFoundError("member")
 	}
 

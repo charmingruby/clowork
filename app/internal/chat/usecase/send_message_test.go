@@ -25,8 +25,8 @@ func Test_SendMessage(t *testing.T) {
 			Return(model.Room{ID: dummyRoomID}, nil).
 			Once()
 
-		s.memberRepo.On("ExistsInRoomByID", ctx, dummySenderID, dummyRoomID).
-			Return(true, nil).
+		s.memberRepo.On("FindByIDInRoom", ctx, dummySenderID, dummyRoomID).
+			Return(model.RoomMember{ID: dummySenderID}, nil).
 			Once()
 
 		s.messageRepo.On("Create", ctx, mock.MatchedBy(func(m model.Message) bool {
@@ -43,7 +43,7 @@ func Test_SendMessage(t *testing.T) {
 			SenderID: dummySenderID,
 		})
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		assert.NotEmpty(t, id)
 	})
@@ -90,30 +90,33 @@ func Test_SendMessage(t *testing.T) {
 		assert.ErrorAs(t, err, &targetErr)
 	})
 
-	t.Run("should return DatabaseError when ExistsMemberInRoomByID operation source has some error", func(t *testing.T) {
-		s := setupTest(t)
+	t.Run(
+		"should return DatabaseError when FindRoomByIDInRoom operation source has some error",
+		func(t *testing.T) {
+			s := setupTest(t)
 
-		s.roomRepo.On("FindByID", ctx, dummyRoomID).
-			Return(model.Room{ID: dummyRoomID}, nil).
-			Once()
+			s.roomRepo.On("FindByID", ctx, dummyRoomID).
+				Return(model.Room{ID: dummyRoomID}, nil).
+				Once()
 
-		s.memberRepo.On("ExistsInRoomByID", ctx, dummySenderID, dummyRoomID).
-			Return(false, errors.New("database error")).
-			Once()
+			s.memberRepo.On("FindByIDInRoom", ctx, dummySenderID, dummyRoomID).
+				Return(model.RoomMember{}, errors.New("database error")).
+				Once()
 
-		id, err := s.usecase.SendMessage(ctx, usecase.SendMessageInput{
-			RoomID:   dummyRoomID,
-			Content:  dummyContent,
-			SenderID: dummySenderID,
-		})
+			id, err := s.usecase.SendMessage(ctx, usecase.SendMessageInput{
+				RoomID:   dummyRoomID,
+				Content:  dummyContent,
+				SenderID: dummySenderID,
+			})
 
-		assert.Empty(t, id)
+			assert.Empty(t, id)
 
-		require.Error(t, err)
+			require.Error(t, err)
 
-		var targetErr *core.DatabaseError
-		assert.ErrorAs(t, err, &targetErr)
-	})
+			var targetErr *core.DatabaseError
+			assert.ErrorAs(t, err, &targetErr)
+		},
+	)
 
 	t.Run("should return NotFoundError when member does not exists in room", func(t *testing.T) {
 		s := setupTest(t)
@@ -122,8 +125,8 @@ func Test_SendMessage(t *testing.T) {
 			Return(model.Room{ID: dummyRoomID}, nil).
 			Once()
 
-		s.memberRepo.On("ExistsInRoomByID", ctx, dummySenderID, dummyRoomID).
-			Return(false, nil).
+		s.memberRepo.On("FindByIDInRoom", ctx, dummySenderID, dummyRoomID).
+			Return(model.RoomMember{}, nil).
 			Once()
 
 		id, err := s.usecase.SendMessage(ctx, usecase.SendMessageInput{
@@ -147,8 +150,8 @@ func Test_SendMessage(t *testing.T) {
 			Return(model.Room{ID: dummyRoomID}, nil).
 			Once()
 
-		s.memberRepo.On("ExistsInRoomByID", ctx, dummySenderID, dummyRoomID).
-			Return(true, nil).
+		s.memberRepo.On("FindByIDInRoom", ctx, dummySenderID, dummyRoomID).
+			Return(model.RoomMember{ID: dummySenderID}, nil).
 			Once()
 
 		s.messageRepo.On("Create", ctx, mock.MatchedBy(func(m model.Message) bool {
