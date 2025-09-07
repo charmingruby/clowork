@@ -9,10 +9,10 @@ service ChatStream {
 };
 
 service ChatAPI {
+    rpc CreateRoom(CreateRoomRequest) returns (CreateRoomReply);
     rpc ListRooms(ListRoomsRequest) returns (ListRoomsReply);
     rpc GetRoomHistory(GetRoomHistoryRequest) returns (GetRoomHistoryReply);
     rpc GetRoomMembers(GetRoomMembersRequest) returns (GetRoomMembersReply);
-    rpc CreateRoom(CreateRoomRequest) returns (CreateRoomReply);
 };
 
 message ClientEvent {};
@@ -31,6 +31,11 @@ message GetRoomMembersRequest {};
 
 message GetRoomMembersReply {};
 
-message CreateRoomRequest {};
+message CreateRoomRequest {
+    string name = 1;
+    string topic = 2; 
+};
 
-message CreateRoomReply {};
+message CreateRoomReply {
+    string room_id = 1;
+};

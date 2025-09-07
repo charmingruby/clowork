@@ -26,7 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ChatStreamClient interface {
-	Stream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ClientEvent, ServerEvent], error)
+	Stream(ctx context.Context, in *ClientEvent, opts ...grpc.CallOption) (*ServerEvent, error)
 }
 
 type chatStreamClient struct {
@@ -37,24 +37,21 @@ func NewChatStreamClient(cc grpc.ClientConnInterface) ChatStreamClient {
 	return &chatStreamClient{cc}
 }
 
-func (c *chatStreamClient) Stream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ClientEvent, ServerEvent], error) {
+func (c *chatStreamClient) Stream(ctx context.Context, in *ClientEvent, opts ...grpc.CallOption) (*ServerEvent, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &ChatStream_ServiceDesc.Streams[0], ChatStream_Stream_FullMethodName, cOpts...)
+	out := new(ServerEvent)
+	err := c.cc.Invoke(ctx, ChatStream_Stream_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[ClientEvent, ServerEvent]{ClientStream: stream}
-	return x, nil
+	return out, nil
 }
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ChatStream_StreamClient = grpc.BidiStreamingClient[ClientEvent, ServerEvent]
 
 // ChatStreamServer is the server API for ChatStream service.
 // All implementations must embed UnimplementedChatStreamServer
 // for forward compatibility.
 type ChatStreamServer interface {
-	Stream(grpc.BidiStreamingServer[ClientEvent, ServerEvent]) error
+	Stream(context.Context, *ClientEvent) (*ServerEvent, error)
 	mustEmbedUnimplementedChatStreamServer()
 }
 
@@ -65,8 +62,8 @@ type ChatStreamServer interface {
 // pointer dereference when methods are called.
 type UnimplementedChatStreamServer struct{}
 
-func (UnimplementedChatStreamServer) Stream(grpc.BidiStreamingServer[ClientEvent, ServerEvent]) error {
-	return status.Errorf(codes.Unimplemented, "method Stream not implemented")
+func (UnimplementedChatStreamServer) Stream(context.Context, *ClientEvent) (*ServerEvent, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Stream not implemented")
 }
 func (UnimplementedChatStreamServer) mustEmbedUnimplementedChatStreamServer() {}
 func (UnimplementedChatStreamServer) testEmbeddedByValue()                    {}
@@ -89,12 +86,23 @@ func RegisterChatStreamServer(s grpc.ServiceRegistrar, srv ChatStreamServer) {
 	s.RegisterService(&ChatStream_ServiceDesc, srv)
 }
 
-func _ChatStream_Stream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(ChatStreamServer).Stream(&grpc.GenericServerStream[ClientEvent, ServerEvent]{ServerStream: stream})
+func _ChatStream_Stream_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ClientEvent)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatStreamServer).Stream(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatStream_Stream_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatStreamServer).Stream(ctx, req.(*ClientEvent))
+	}
+	return interceptor(ctx, in, info, handler)
 }
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ChatStream_StreamServer = grpc.BidiStreamingServer[ClientEvent, ServerEvent]
 
 // ChatStream_ServiceDesc is the grpc.ServiceDesc for ChatStream service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -102,14 +110,228 @@ type ChatStream_StreamServer = grpc.BidiStreamingServer[ClientEvent, ServerEvent
 var ChatStream_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "chat.ChatStream",
 	HandlerType: (*ChatStreamServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
+	Methods: []grpc.MethodDesc{
 		{
-			StreamName:    "Stream",
-			Handler:       _ChatStream_Stream_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
+			MethodName: "Stream",
+			Handler:    _ChatStream_Stream_Handler,
 		},
 	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "chat.proto",
+}
+
+const (
+	ChatAPI_CreateRoom_FullMethodName     = "/chat.ChatAPI/CreateRoom"
+	ChatAPI_ListRooms_FullMethodName      = "/chat.ChatAPI/ListRooms"
+	ChatAPI_GetRoomHistory_FullMethodName = "/chat.ChatAPI/GetRoomHistory"
+	ChatAPI_GetRoomMembers_FullMethodName = "/chat.ChatAPI/GetRoomMembers"
+)
+
+// ChatAPIClient is the client API for ChatAPI service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type ChatAPIClient interface {
+	CreateRoom(ctx context.Context, in *CreateRoomRequest, opts ...grpc.CallOption) (*CreateRoomReply, error)
+	ListRooms(ctx context.Context, in *ListRoomsRequest, opts ...grpc.CallOption) (*ListRoomsReply, error)
+	GetRoomHistory(ctx context.Context, in *GetRoomHistoryRequest, opts ...grpc.CallOption) (*GetRoomHistoryReply, error)
+	GetRoomMembers(ctx context.Context, in *GetRoomMembersRequest, opts ...grpc.CallOption) (*GetRoomMembersReply, error)
+}
+
+type chatAPIClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewChatAPIClient(cc grpc.ClientConnInterface) ChatAPIClient {
+	return &chatAPIClient{cc}
+}
+
+func (c *chatAPIClient) CreateRoom(ctx context.Context, in *CreateRoomRequest, opts ...grpc.CallOption) (*CreateRoomReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateRoomReply)
+	err := c.cc.Invoke(ctx, ChatAPI_CreateRoom_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatAPIClient) ListRooms(ctx context.Context, in *ListRoomsRequest, opts ...grpc.CallOption) (*ListRoomsReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListRoomsReply)
+	err := c.cc.Invoke(ctx, ChatAPI_ListRooms_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatAPIClient) GetRoomHistory(ctx context.Context, in *GetRoomHistoryRequest, opts ...grpc.CallOption) (*GetRoomHistoryReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetRoomHistoryReply)
+	err := c.cc.Invoke(ctx, ChatAPI_GetRoomHistory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatAPIClient) GetRoomMembers(ctx context.Context, in *GetRoomMembersRequest, opts ...grpc.CallOption) (*GetRoomMembersReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetRoomMembersReply)
+	err := c.cc.Invoke(ctx, ChatAPI_GetRoomMembers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ChatAPIServer is the server API for ChatAPI service.
+// All implementations must embed UnimplementedChatAPIServer
+// for forward compatibility.
+type ChatAPIServer interface {
+	CreateRoom(context.Context, *CreateRoomRequest) (*CreateRoomReply, error)
+	ListRooms(context.Context, *ListRoomsRequest) (*ListRoomsReply, error)
+	GetRoomHistory(context.Context, *GetRoomHistoryRequest) (*GetRoomHistoryReply, error)
+	GetRoomMembers(context.Context, *GetRoomMembersRequest) (*GetRoomMembersReply, error)
+	mustEmbedUnimplementedChatAPIServer()
+}
+
+// UnimplementedChatAPIServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedChatAPIServer struct{}
+
+func (UnimplementedChatAPIServer) CreateRoom(context.Context, *CreateRoomRequest) (*CreateRoomReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateRoom not implemented")
+}
+func (UnimplementedChatAPIServer) ListRooms(context.Context, *ListRoomsRequest) (*ListRoomsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListRooms not implemented")
+}
+func (UnimplementedChatAPIServer) GetRoomHistory(context.Context, *GetRoomHistoryRequest) (*GetRoomHistoryReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRoomHistory not implemented")
+}
+func (UnimplementedChatAPIServer) GetRoomMembers(context.Context, *GetRoomMembersRequest) (*GetRoomMembersReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRoomMembers not implemented")
+}
+func (UnimplementedChatAPIServer) mustEmbedUnimplementedChatAPIServer() {}
+func (UnimplementedChatAPIServer) testEmbeddedByValue()                 {}
+
+// UnsafeChatAPIServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ChatAPIServer will
+// result in compilation errors.
+type UnsafeChatAPIServer interface {
+	mustEmbedUnimplementedChatAPIServer()
+}
+
+func RegisterChatAPIServer(s grpc.ServiceRegistrar, srv ChatAPIServer) {
+	// If the following call pancis, it indicates UnimplementedChatAPIServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&ChatAPI_ServiceDesc, srv)
+}
+
+func _ChatAPI_CreateRoom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRoomRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatAPIServer).CreateRoom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatAPI_CreateRoom_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatAPIServer).CreateRoom(ctx, req.(*CreateRoomRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatAPI_ListRooms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRoomsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatAPIServer).ListRooms(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatAPI_ListRooms_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatAPIServer).ListRooms(ctx, req.(*ListRoomsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatAPI_GetRoomHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRoomHistoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatAPIServer).GetRoomHistory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatAPI_GetRoomHistory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatAPIServer).GetRoomHistory(ctx, req.(*GetRoomHistoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatAPI_GetRoomMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRoomMembersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatAPIServer).GetRoomMembers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatAPI_GetRoomMembers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatAPIServer).GetRoomMembers(ctx, req.(*GetRoomMembersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// ChatAPI_ServiceDesc is the grpc.ServiceDesc for ChatAPI service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var ChatAPI_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "chat.ChatAPI",
+	HandlerType: (*ChatAPIServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateRoom",
+			Handler:    _ChatAPI_CreateRoom_Handler,
+		},
+		{
+			MethodName: "ListRooms",
+			Handler:    _ChatAPI_ListRooms_Handler,
+		},
+		{
+			MethodName: "GetRoomHistory",
+			Handler:    _ChatAPI_GetRoomHistory_Handler,
+		},
+		{
+			MethodName: "GetRoomMembers",
+			Handler:    _ChatAPI_GetRoomMembers_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "chat.proto",
 }
