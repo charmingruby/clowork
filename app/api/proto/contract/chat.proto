@@ -4,14 +4,33 @@ package chat;
 
 option go_package = "github.com/charmingruby/clowork/api/proto/pb";
 
+service ChatStream {
+    rpc Stream(ClientEvent) returns (ServerEvent);
+};
+
+service ChatAPI {
+    rpc ListRooms(ListRoomsRequest) returns (ListRoomsReply);
+    rpc GetRoomHistory(GetRoomHistoryRequest) returns (GetRoomHistoryReply);
+    rpc GetRoomMembers(GetRoomMembersRequest) returns (GetRoomMembersReply);
+    rpc CreateRoom(CreateRoomRequest) returns (CreateRoomReply);
+};
+
 message ClientEvent {};
 
 message ServerEvent {};
 
-service ChatStream {
-    rpc Stream(stream ClientEvent) returns (stream ServerEvent);
-};
+message ListRoomsRequest {};
 
-// service ChatAPI {
+message ListRoomsReply {};
 
-// };
+message GetRoomHistoryRequest {};
+
+message GetRoomHistoryReply {};
+
+message GetRoomMembersRequest {};
+
+message GetRoomMembersReply {};
+
+message CreateRoomRequest {};
+
+message CreateRoomReply {};
