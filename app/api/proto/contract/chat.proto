@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package chat;
+
+option go_package = "github.com/charmingruby/clowork/api/proto/pb";
+
+message ClientEvent {};
+
+message ServerEvent {};
+
+service ChatStream {
+    rpc Stream(stream ClientEvent) returns (stream ServerEvent);
+};
+
+// service ChatAPI {
+
+// };
