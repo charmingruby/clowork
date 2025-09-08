@@ -30,7 +30,9 @@ func Test_JoinRoom(t *testing.T) {
 			Once()
 
 		s.memberRepo.On("Create", ctx, mock.MatchedBy(func(m model.RoomMember) bool {
-			return m.Nickname == dummyNickname && m.Hostname == dummyHostname
+			return m.Nickname == dummyNickname &&
+				m.Hostname == dummyHostname &&
+				m.RoomID == dummyRoomID
 		})).
 			Return(nil).
 			Once()

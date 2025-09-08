@@ -28,7 +28,7 @@ func (u UseCase) JoinRoom(ctx context.Context, in JoinRoomInput) (string, error)
 		return "", core.NewConflictError("member")
 	}
 
-	member := model.NewRoomMember(in.Nickname, in.Hostname)
+	member := model.NewRoomMember(in.Nickname, in.Hostname, in.RoomID)
 
 	if err := u.memberRepo.Create(ctx, member); err != nil {
 		return "", core.NewDatabaseError(err)
