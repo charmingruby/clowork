@@ -56,7 +56,10 @@ func main() {
 
 	platform.New(r, db)
 
-	chat.New(db.Conn, grpcSrv.Conn)
+	if err := chat.New(log, db.Conn, grpcSrv.Conn); err != nil {
+		log.Error("failed create Chat module", "error", err)
+		failAndExit(log, restSrv, &grpcSrv, db)
+	}
 
 	go func() {
 		log.Info("REST server is running...", "port", cfg.RestServerPort)

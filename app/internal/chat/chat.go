@@ -4,11 +4,12 @@ import (
 	"github.com/charmingruby/clowork/internal/chat/delivery/grpc/server"
 	"github.com/charmingruby/clowork/internal/chat/repository/postgres"
 	"github.com/charmingruby/clowork/internal/chat/usecase"
+	"github.com/charmingruby/clowork/pkg/telemetry/logger"
 	"github.com/jmoiron/sqlx"
 	"google.golang.org/grpc"
 )
 
-func New(db *sqlx.DB, srv *grpc.Server) error {
+func New(log *logger.Logger, db *sqlx.DB, srv *grpc.Server) error {
 	messageRepo, err := postgres.NewMessageRepo(db)
 	if err != nil {
 		return err
@@ -26,7 +27,7 @@ func New(db *sqlx.DB, srv *grpc.Server) error {
 
 	uc := usecase.New(roomMemberRepo, roomRepo, messageRepo)
 
-	server.New(srv, uc).Register()
+	server.New(log, srv, uc).Register()
 
 	return nil
 }
