@@ -1,8 +1,6 @@
 package server
 
 import (
-	"net"
-
 	"github.com/charmingruby/clowork/api/proto/pb"
 	"google.golang.org/grpc"
 )
@@ -14,24 +12,13 @@ type Server struct {
 	server *grpc.Server
 }
 
-func New() *Server {
-	grpcSrv := grpc.NewServer()
-
-	srv := &Server{
-		server: grpcSrv,
+func New(srv *grpc.Server) *Server {
+	return &Server{
+		server: srv,
 	}
-
-	pb.RegisterChatStreamServer(grpcSrv, srv)
-	pb.RegisterChatAPIServer(grpcSrv, srv)
-
-	return srv
 }
 
-func (s *Server) Run(addr string) error {
-	lis, err := net.Listen("tcp", addr)
-	if err != nil {
-		return err
-	}
-
-	return s.server.Serve(lis)
+func (s *Server) Register() {
+	pb.RegisterChatStreamServer(s.server, s)
+	pb.RegisterChatAPIServer(s.server, s)
 }

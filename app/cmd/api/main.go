@@ -8,8 +8,10 @@ import (
 	"time"
 
 	"github.com/charmingruby/clowork/config"
+	"github.com/charmingruby/clowork/internal/chat"
 	"github.com/charmingruby/clowork/internal/platform"
 	"github.com/charmingruby/clowork/pkg/database/postgres"
+	"github.com/charmingruby/clowork/pkg/delivery/http/grpc"
 	"github.com/charmingruby/clowork/pkg/delivery/http/rest"
 	"github.com/charmingruby/clowork/pkg/telemetry/logger"
 
@@ -28,7 +30,7 @@ func main() {
 	cfg, err := config.New()
 	if err != nil {
 		log.Error("failed to loading environment variables", "error", err)
-		failAndExit(log, nil, nil)
+		failAndExit(log, nil, nil, nil)
 	}
 
 	log.Info("environment variables loaded")
@@ -42,21 +44,35 @@ func main() {
 	db, err := postgres.New(log, cfg.PostgresURL)
 	if err != nil {
 		log.Error("failed connect to Postgres", "error", err)
-		failAndExit(log, nil, nil)
+		failAndExit(log, nil, nil, nil)
 	}
 
 	log.Info("connected to Postgres successfully")
 
-	srv, r := rest.New(cfg.RestServerPort)
+	restSrv, r := rest.New(cfg.RestServerPort)
+
+	grpcAddr := fmt.Sprintf("%s:%s", cfg.GRPCServerHost, cfg.GRPCServerPort)
+	grpcSrv := grpc.New(grpcAddr)
 
 	platform.New(r, db)
+
+	chat.New(grpcSrv.Conn)
 
 	go func() {
 		log.Info("REST server is running...", "port", cfg.RestServerPort)
 
-		if err := srv.Start(); err != nil {
+		if err := restSrv.Start(); err != nil {
 			log.Error("failed starting REST server", "error", err)
-			failAndExit(log, srv, db)
+			failAndExit(log, restSrv, nil, db)
+		}
+	}()
+
+	go func() {
+		log.Info("gRPC server is running...", "port", cfg.GRPCServerPort)
+
+		if err := grpcSrv.Start(); err != nil {
+			log.Error("failed starting gRPC server", "error", err)
+			failAndExit(log, restSrv, &grpcSrv, db)
 		}
 	}()
 
@@ -68,31 +84,35 @@ func main() {
 
 	log.Info("starting graceful shutdown...")
 
-	signal := gracefulShutdown(log, srv, db)
+	signal := gracefulShutdown(log, restSrv, &grpcSrv, db)
 
 	log.Info(fmt.Sprintf("gracefully shutdown, with code %d", signal))
 
 	os.Exit(signal)
 }
 
-func failAndExit(log *logger.Logger, srv *rest.Server, db *postgres.Client) {
-	gracefulShutdown(log, srv, db)
+func failAndExit(log *logger.Logger, restSrv *rest.Server, grpcSrv *grpc.Server, db *postgres.Client) {
+	gracefulShutdown(log, restSrv, grpcSrv, db)
 	os.Exit(1)
 }
 
-func gracefulShutdown(log *logger.Logger, srv *rest.Server, db *postgres.Client) int {
+func gracefulShutdown(log *logger.Logger, restSrv *rest.Server, grpcSrv *grpc.Server, db *postgres.Client) int {
 	parentCtx := context.Background()
 
 	var hasError bool
 
-	if srv != nil {
+	if restSrv != nil {
 		ctx, cancel := context.WithTimeout(parentCtx, 15*time.Second)
 		defer cancel()
 
-		if err := srv.Stop(ctx); err != nil {
+		if err := restSrv.Close(ctx); err != nil {
 			log.Error("error closing REST server", "error", err)
 			hasError = true
 		}
+	}
+
+	if grpcSrv != nil {
+		grpcSrv.Close()
 	}
 
 	if db != nil {

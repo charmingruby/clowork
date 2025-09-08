@@ -37,5 +37,6 @@ RUN chown appuser:appuser /app/main
 USER appuser
 
 EXPOSE 3000
+EXPOSE 50000
 
 CMD ["./main"]
