@@ -56,7 +56,7 @@ func main() {
 
 	platform.New(r, db)
 
-	chat.New(grpcSrv.Conn)
+	chat.New(db.Conn, grpcSrv.Conn)
 
 	go func() {
 		log.Info("REST server is running...", "port", cfg.RestServerPort)
