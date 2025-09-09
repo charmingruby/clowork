@@ -11,11 +11,12 @@ import (
 )
 
 type RoomMemberRepo struct {
-	db    *sqlx.DB
-	stmts map[string]*sqlx.Stmt
+	db       *sqlx.DB
+	stmts    map[string]*sqlx.Stmt
+	pageSize int
 }
 
-func NewRoomMemberRepo(db *sqlx.DB) (*RoomMemberRepo, error) {
+func NewRoomMemberRepo(db *sqlx.DB, pageSize int) (*RoomMemberRepo, error) {
 	stmts := make(map[string]*sqlx.Stmt)
 
 	for queryName, statement := range roomMemberQueries() {
@@ -29,8 +30,9 @@ func NewRoomMemberRepo(db *sqlx.DB) (*RoomMemberRepo, error) {
 	}
 
 	return &RoomMemberRepo{
-		db:    db,
-		stmts: stmts,
+		db:       db,
+		stmts:    stmts,
+		pageSize: pageSize,
 	}, nil
 }
 
@@ -121,6 +123,48 @@ func (r *RoomMemberRepo) Create(ctx context.Context, rm model.RoomMember) error 
 	)
 
 	return err
+}
+
+func (r *RoomMemberRepo) ListByRoomID(ctx context.Context, roomID string, page int) ([]model.RoomMember, error) {
+	ctx, cancel := context.WithTimeout(ctx, time.Second*5)
+	defer cancel()
+
+	stmt, err := r.statement(listMembersByRoomID)
+	if err != nil {
+		return nil, err
+	}
+
+	if page <= 0 {
+		page = 1
+	}
+
+	offset := (page - 1) * r.pageSize
+
+	rows, err := stmt.QueryxContext(ctx,
+		roomID,
+		offset,
+		r.pageSize,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	var members []model.RoomMember
+
+	for rows.Next() {
+		var member model.RoomMember
+		if err := rows.StructScan(&member); err != nil {
+			return nil, err
+		}
+
+		members = append(members, member)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return members, nil
 }
 
 func (r *RoomMemberRepo) UpdateStatus(ctx context.Context, rm model.RoomMember) error {

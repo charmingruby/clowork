@@ -27,7 +27,7 @@ func New(in Input) error {
 		return err
 	}
 
-	roomMemberRepo, err := postgres.NewRoomMemberRepo(in.DB)
+	roomMemberRepo, err := postgres.NewRoomMemberRepo(in.DB, in.DatabasePageSize)
 	if err != nil {
 		return err
 	}

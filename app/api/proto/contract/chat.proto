@@ -21,6 +21,15 @@ message ClientEvent {};
 
 message ServerEvent {};
 
+message CreateRoomRequest {
+    string name = 1;
+    string topic = 2; 
+};
+
+message CreateRoomReply {
+    string room_id = 1;
+};
+
 message ListRoomsRequest {
     int64 page = 1; 
 };
@@ -40,17 +49,14 @@ message ListRoomMessagesReply {
     int64 results = 2;
 };
 
-message ListRoomMembersRequest {};
-
-message ListRoomMembersReply {};
-
-message CreateRoomRequest {
-    string name = 1;
-    string topic = 2; 
+message ListRoomMembersRequest {
+    int64 page = 1; 
+    string room_id = 2;
 };
 
-message CreateRoomReply {
-    string room_id = 1;
+message ListRoomMembersReply {
+    repeated RoomMember members = 1;
+    int64 results = 2;
 };
 
 message Room {
@@ -66,4 +72,14 @@ message Message {
     string room_id = 3;
     string sender_id = 4;
     google.protobuf.Timestamp created_at = 5;
+};
+
+message RoomMember {
+    string id = 1;
+    string hostname = 2;
+    string nickname = 3;
+    string status = 4;
+    string room_id = 5;
+    google.protobuf.Timestamp created_at = 6;
+    optional google.protobuf.Timestamp updated_at = 7;
 };

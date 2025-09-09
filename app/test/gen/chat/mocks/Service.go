@@ -88,6 +88,34 @@ func (_m *Service) LeaveRoom(ctx context.Context, in usecase.LeaveRoomInput) err
 	return r0
 }
 
+// ListRoomMembers provides a mock function with given fields: ctx, in
+func (_m *Service) ListRoomMembers(ctx context.Context, in usecase.ListRoomMembersInput) (usecase.ListRoomMembersOutput, error) {
+	ret := _m.Called(ctx, in)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListRoomMembers")
+	}
+
+	var r0 usecase.ListRoomMembersOutput
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, usecase.ListRoomMembersInput) (usecase.ListRoomMembersOutput, error)); ok {
+		return rf(ctx, in)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, usecase.ListRoomMembersInput) usecase.ListRoomMembersOutput); ok {
+		r0 = rf(ctx, in)
+	} else {
+		r0 = ret.Get(0).(usecase.ListRoomMembersOutput)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, usecase.ListRoomMembersInput) error); ok {
+		r1 = rf(ctx, in)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // ListRoomMessages provides a mock function with given fields: ctx, in
 func (_m *Service) ListRoomMessages(ctx context.Context, in usecase.ListRoomMessagesInput) (usecase.ListRoomMessagesOutput, error) {
 	ret := _m.Called(ctx, in)

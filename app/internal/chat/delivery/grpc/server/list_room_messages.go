@@ -20,19 +20,19 @@ func (s *Server) ListRoomMessages(ctx context.Context, req *pb.ListRoomMessagesR
 	if err != nil {
 		var notFoundErr *core.NotFoundError
 		if errors.As(err, &notFoundErr) {
-			s.log.Error("get room history error", "reason", "not found", "error", err.Error())
+			s.log.Error("list room messages error", "reason", "not found", "error", err.Error())
 
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
 
 		var databaseErr *core.DatabaseError
 		if errors.As(err, &databaseErr) {
-			s.log.Error("get room history error", "reason", "database", "error", databaseErr.Unwrap().Error())
+			s.log.Error("list room messages error", "reason", "database", "error", databaseErr.Unwrap().Error())
 
 			return nil, status.Error(codes.Internal, "internal server error")
 		}
 
-		s.log.Error("get room history error", "reason", "unknown", "error", err)
+		s.log.Error("list room messages error", "reason", "unknown", "error", err)
 
 		return nil, status.Error(codes.Internal, "internal server error")
 	}

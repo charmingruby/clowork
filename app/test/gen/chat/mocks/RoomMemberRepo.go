@@ -88,6 +88,36 @@ func (_m *RoomMemberRepo) FindByIDInRoom(ctx context.Context, memberID string, r
 	return r0, r1
 }
 
+// ListByRoomID provides a mock function with given fields: ctx, roomID, page
+func (_m *RoomMemberRepo) ListByRoomID(ctx context.Context, roomID string, page int) ([]model.RoomMember, error) {
+	ret := _m.Called(ctx, roomID, page)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListByRoomID")
+	}
+
+	var r0 []model.RoomMember
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, int) ([]model.RoomMember, error)); ok {
+		return rf(ctx, roomID, page)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, int) []model.RoomMember); ok {
+		r0 = rf(ctx, roomID, page)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]model.RoomMember)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, int) error); ok {
+		r1 = rf(ctx, roomID, page)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // UpdateStatus provides a mock function with given fields: ctx, member
 func (_m *RoomMemberRepo) UpdateStatus(ctx context.Context, member model.RoomMember) error {
 	ret := _m.Called(ctx, member)

@@ -2,8 +2,9 @@ package postgres
 
 const (
 	createRoomMember         = "create room member"
-	roomMemberExistsInRoom   = "room member exists in room"
 	findRoomMemberByIDInRoom = "find room member by id in room"
+	listMembersByRoomID      = "list members by room id"
+	roomMemberExistsInRoom   = "room member exists in room"
 	updateRoomMemberStatus   = "update room member status"
 )
 
@@ -14,6 +15,12 @@ func roomMemberQueries() map[string]string {
 			(id, nickname, hostname, room_id, created_at)
 		VALUES 
 			($1, $2, $3, $4, $5)`,
+		listMembersByRoomID: `
+		SELECT * FROM room_members
+		WHERE room_id = $1
+		ORDER BY created_at DESC
+		OFFSET $2
+		LIMIT $3`,
 		roomMemberExistsInRoom: `
 		SELECT * FROM room_members
 		WHERE 
