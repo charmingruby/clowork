@@ -88,6 +88,36 @@ func (_m *RoomRepo) FindByName(ctx context.Context, name string) (model.Room, er
 	return r0, r1
 }
 
+// List provides a mock function with given fields: ctx, page
+func (_m *RoomRepo) List(ctx context.Context, page int) ([]model.Room, error) {
+	ret := _m.Called(ctx, page)
+
+	if len(ret) == 0 {
+		panic("no return value specified for List")
+	}
+
+	var r0 []model.Room
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int) ([]model.Room, error)); ok {
+		return rf(ctx, page)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int) []model.Room); ok {
+		r0 = rf(ctx, page)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]model.Room)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
+		r1 = rf(ctx, page)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // NewRoomRepo creates a new instance of RoomRepo. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewRoomRepo(t interface {

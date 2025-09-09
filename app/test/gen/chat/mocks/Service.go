@@ -88,6 +88,34 @@ func (_m *Service) LeaveRoom(ctx context.Context, in usecase.LeaveRoomInput) err
 	return r0
 }
 
+// ListRooms provides a mock function with given fields: ctx, page
+func (_m *Service) ListRooms(ctx context.Context, page int) (usecase.ListRoomsOutput, error) {
+	ret := _m.Called(ctx, page)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListRooms")
+	}
+
+	var r0 usecase.ListRoomsOutput
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int) (usecase.ListRoomsOutput, error)); ok {
+		return rf(ctx, page)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int) usecase.ListRoomsOutput); ok {
+		r0 = rf(ctx, page)
+	} else {
+		r0 = ret.Get(0).(usecase.ListRoomsOutput)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
+		r1 = rf(ctx, page)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // SendMessage provides a mock function with given fields: ctx, in
 func (_m *Service) SendMessage(ctx context.Context, in usecase.SendMessageInput) (string, error) {
 	ret := _m.Called(ctx, in)

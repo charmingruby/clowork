@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 
+	"github.com/charmingruby/clowork/internal/chat/model"
 	"github.com/charmingruby/clowork/internal/chat/repository"
 )
 
@@ -17,16 +18,15 @@ type CreateRoomInput struct {
 	Topic string
 }
 
-type SendMessageInput struct {
-	Content  string
-	RoomID   string
-	SenderID string
-}
-
 type JoinRoomInput struct {
 	Nickname string
 	Hostname string
 	RoomID   string
+}
+
+type ListRoomsOutput struct {
+	Results int
+	Rooms   []model.Room
 }
 
 type LeaveRoomInput struct {
@@ -34,10 +34,17 @@ type LeaveRoomInput struct {
 	RoomID   string
 }
 
+type SendMessageInput struct {
+	Content  string
+	RoomID   string
+	SenderID string
+}
+
 type Service interface {
 	CreateRoom(ctx context.Context, in CreateRoomInput) (string, error)
 	JoinRoom(ctx context.Context, in JoinRoomInput) (string, error)
 	LeaveRoom(ctx context.Context, in LeaveRoomInput) error
+	ListRooms(ctx context.Context, page int) (ListRoomsOutput, error)
 	SendMessage(ctx context.Context, in SendMessageInput) (string, error)
 }
 

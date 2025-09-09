@@ -56,8 +56,13 @@ func main() {
 
 	platform.New(r, db)
 
-	if err := chat.New(log, db.Conn, grpcSrv.Conn); err != nil {
-		log.Error("failed create Chat module", "error", err)
+	if err := chat.New(chat.Input{
+		Log:              log,
+		DB:               db.Conn,
+		Server:           grpcSrv.Conn,
+		DatabasePageSize: cfg.DatabasePageSize,
+	}); err != nil {
+		log.Error("failed create chat module", "error", err)
 		failAndExit(log, restSrv, &grpcSrv, db)
 	}
 

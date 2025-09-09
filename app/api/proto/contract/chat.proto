@@ -4,6 +4,8 @@ package chat;
 
 option go_package = "github.com/charmingruby/clowork/api/proto/pb";
 
+import "google/protobuf/timestamp.proto";
+
 service ChatStream {
     rpc Stream(ClientEvent) returns (ServerEvent);
 };
@@ -19,9 +21,14 @@ message ClientEvent {};
 
 message ServerEvent {};
 
-message ListRoomsRequest {};
+message ListRoomsRequest {
+    int64 page = 1; 
+};
 
-message ListRoomsReply {};
+message ListRoomsReply {
+    repeated Room rooms = 1;
+    int64 results = 2;
+};
 
 message GetRoomHistoryRequest {};
 
@@ -38,4 +45,11 @@ message CreateRoomRequest {
 
 message CreateRoomReply {
     string room_id = 1;
+};
+
+message Room {
+    string id = 1;
+    string name = 2;
+    string topic = 3;
+    google.protobuf.Timestamp created_at = 4;
 };

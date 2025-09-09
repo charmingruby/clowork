@@ -37,7 +37,8 @@ type DatabaseError struct {
 
 func NewDatabaseError(err error) error {
 	return &DatabaseError{
-		message: "database error",
+		message:     "database error",
+		originalErr: err,
 	}
 }
 

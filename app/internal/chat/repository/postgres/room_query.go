@@ -4,6 +4,7 @@ const (
 	createRoom     = "create room"
 	findRoomByName = "find room by name"
 	findRoomByID   = "find room by id"
+	listRooms      = "list rooms"
 )
 
 func roomQueries() map[string]string {
@@ -19,5 +20,10 @@ func roomQueries() map[string]string {
 		findRoomByID: `
 		SELECT * FROM rooms
 		WHERE id = $1`,
+		listRooms: `
+		SELECT * FROM rooms
+		ORDER BY created_at DESC
+		LIMIT $1
+		OFFSET $2`,
 	}
 }

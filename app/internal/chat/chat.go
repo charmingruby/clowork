@@ -9,25 +9,32 @@ import (
 	"google.golang.org/grpc"
 )
 
-func New(log *logger.Logger, db *sqlx.DB, srv *grpc.Server) error {
-	messageRepo, err := postgres.NewMessageRepo(db)
+type Input struct {
+	Log              *logger.Logger
+	DB               *sqlx.DB
+	Server           *grpc.Server
+	DatabasePageSize int
+}
+
+func New(in Input) error {
+	messageRepo, err := postgres.NewMessageRepo(in.DB)
 	if err != nil {
 		return err
 	}
 
-	roomRepo, err := postgres.NewRoomRepo(db)
+	roomRepo, err := postgres.NewRoomRepo(in.DB, in.DatabasePageSize)
 	if err != nil {
 		return err
 	}
 
-	roomMemberRepo, err := postgres.NewRoomMemberRepo(db)
+	roomMemberRepo, err := postgres.NewRoomMemberRepo(in.DB)
 	if err != nil {
 		return err
 	}
 
 	uc := usecase.New(roomMemberRepo, roomRepo, messageRepo)
 
-	server.New(log, srv, uc).Register()
+	server.New(in.Log, in.Server, uc).Register()
 
 	return nil
 }
