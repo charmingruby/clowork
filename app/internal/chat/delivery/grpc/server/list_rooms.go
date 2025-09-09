@@ -27,6 +27,7 @@ func (s *Server) ListRooms(ctx context.Context, req *pb.ListRoomsRequest) (*pb.L
 	}
 
 	rooms := make([]*pb.Room, output.Results)
+
 	for idx, rm := range output.Rooms {
 		rooms[idx] = mapper.RoomToProtobuf(rm)
 	}
