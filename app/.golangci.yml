@@ -85,6 +85,9 @@ linters:
     - wastedassign
     - whitespace
 
+  disable:
+    - dupl
+
   exclusions:
     rules:
       - path: '(.+)_test\.go'

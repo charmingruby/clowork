@@ -13,8 +13,8 @@ import (
 
 func (s *Server) CreateRoom(ctx context.Context, req *pb.CreateRoomRequest) (*pb.CreateRoomReply, error) {
 	id, err := s.usecase.CreateRoom(ctx, usecase.CreateRoomInput{
-		Name:  req.Name,
-		Topic: req.Topic,
+		Name:  req.GetName(),
+		Topic: req.GetTopic(),
 	})
 	if err != nil {
 		var conflictErr *core.ConflictError

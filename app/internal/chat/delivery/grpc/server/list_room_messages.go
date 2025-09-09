@@ -12,10 +12,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) ListRoomMessages(ctx context.Context, req *pb.ListRoomMessagesRequest) (*pb.ListRoomMessagesReply, error) {
+func (s *Server) ListRoomMessages(
+	ctx context.Context,
+	req *pb.ListRoomMessagesRequest,
+) (*pb.ListRoomMessagesReply, error) {
 	op, err := s.usecase.ListRoomMessages(ctx, usecase.ListRoomMessagesInput{
-		RoomID: req.RoomId,
-		Page:   int(req.Page),
+		RoomID: req.GetRoomId(),
+		Page:   int(req.GetPage()),
 	})
 	if err != nil {
 		var notFoundErr *core.NotFoundError

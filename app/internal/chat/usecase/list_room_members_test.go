@@ -39,7 +39,7 @@ func Test_ListRoomMembers(t *testing.T) {
 		})
 
 		assert.Equal(t, amountOfMembers, op.Results)
-		assert.Equal(t, amountOfMembers, len(op.Members))
+		assert.Len(t, op.Members, amountOfMembers)
 		assert.NoError(t, err)
 	})
 
@@ -55,7 +55,7 @@ func Test_ListRoomMembers(t *testing.T) {
 		})
 
 		assert.Zero(t, op.Results)
-		assert.Len(t, op.Members, 0)
+		assert.Empty(t, op.Members)
 
 		require.Error(t, err)
 
@@ -76,7 +76,7 @@ func Test_ListRoomMembers(t *testing.T) {
 		})
 
 		assert.Zero(t, op.Results)
-		assert.Len(t, op.Members, 0)
+		assert.Empty(t, op.Members)
 
 		require.Error(t, err)
 
@@ -101,7 +101,7 @@ func Test_ListRoomMembers(t *testing.T) {
 		})
 
 		assert.Zero(t, op.Results)
-		assert.Len(t, op.Members, 0)
+		assert.Empty(t, op.Members)
 
 		require.Error(t, err)
 

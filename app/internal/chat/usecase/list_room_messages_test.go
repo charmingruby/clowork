@@ -39,7 +39,7 @@ func Test_ListRoomMessages(t *testing.T) {
 		})
 
 		assert.Equal(t, amountOfMessages, op.Results)
-		assert.Equal(t, amountOfMessages, len(op.Messages))
+		assert.Len(t, op.Messages, amountOfMessages)
 		assert.NoError(t, err)
 	})
 
@@ -56,7 +56,7 @@ func Test_ListRoomMessages(t *testing.T) {
 		})
 
 		assert.Zero(t, op.Results)
-		assert.Len(t, op.Messages, 0)
+		assert.Empty(t, op.Messages)
 
 		require.Error(t, err)
 
@@ -77,7 +77,7 @@ func Test_ListRoomMessages(t *testing.T) {
 		})
 
 		assert.Zero(t, op.Results)
-		assert.Len(t, op.Messages, 0)
+		assert.Empty(t, op.Messages)
 
 		require.Error(t, err)
 
@@ -102,7 +102,7 @@ func Test_ListRoomMessages(t *testing.T) {
 		})
 
 		assert.Zero(t, op.Results)
-		assert.Len(t, op.Messages, 0)
+		assert.Empty(t, op.Messages)
 
 		require.Error(t, err)
 

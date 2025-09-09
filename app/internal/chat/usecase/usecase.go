@@ -24,28 +24,28 @@ type LeaveRoomInput struct {
 }
 
 type ListRoomsOutput struct {
-	Results int
 	Rooms   []model.Room
+	Results int
 }
 
 type ListRoomMembersInput struct {
-	Page   int
 	RoomID string
+	Page   int
 }
 
 type ListRoomMembersOutput struct {
-	Results int
 	Members []model.RoomMember
+	Results int
 }
 
 type ListRoomMessagesInput struct {
-	Page   int
 	RoomID string
+	Page   int
 }
 
 type ListRoomMessagesOutput struct {
-	Results  int
 	Messages []model.Message
+	Results  int
 }
 
 type JoinRoomInput struct {

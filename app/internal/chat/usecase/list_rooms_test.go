@@ -32,7 +32,7 @@ func Test_ListRooms(t *testing.T) {
 		op, err := s.usecase.ListRooms(ctx, page)
 
 		assert.Equal(t, amountOfRooms, op.Results)
-		assert.Equal(t, amountOfRooms, len(op.Rooms))
+		assert.Len(t, op.Rooms, amountOfRooms)
 		assert.NoError(t, err)
 	})
 
@@ -46,7 +46,7 @@ func Test_ListRooms(t *testing.T) {
 		op, err := s.usecase.ListRooms(ctx, page)
 
 		assert.Zero(t, op.Results)
-		assert.Len(t, op.Rooms, 0)
+		assert.Empty(t, op.Rooms)
 
 		require.Error(t, err)
 

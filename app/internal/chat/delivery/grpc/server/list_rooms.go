@@ -12,7 +12,7 @@ import (
 )
 
 func (s *Server) ListRooms(ctx context.Context, req *pb.ListRoomsRequest) (*pb.ListRoomsReply, error) {
-	op, err := s.usecase.ListRooms(ctx, int(req.Page))
+	op, err := s.usecase.ListRooms(ctx, int(req.GetPage()))
 	if err != nil {
 		var databaseErr *core.DatabaseError
 		if errors.As(err, &databaseErr) {

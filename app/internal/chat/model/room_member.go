@@ -20,7 +20,7 @@ type RoomMember struct {
 	Hostname  string     `json:"hostname"   db:"hostname"`
 	Nickname  string     `json:"nickname"   db:"nickname"`
 	Status    string     `json:"status"     db:"status"`
-	RoomID    string     `json:"room_id"     db:"room_id"`
+	RoomID    string     `json:"room_id"    db:"room_id"`
 }
 
 func NewRoomMember(nickname, hostname, roomID string) RoomMember {

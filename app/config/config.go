@@ -7,8 +7,8 @@ type Config struct {
 	GRPCServerHost   string `env:"GRPC_SERVER_HOST,required"`
 	GRPCServerPort   string `env:"GRPC_SERVER_PORT,required"`
 	PostgresURL      string `env:"POSTGRES_URL,required"`
-	DatabasePageSize int    `env:"DATABASE_PAGE_SIZE,required"`
 	LogLevel         string `env:"LOG_LEVEL"`
+	DatabasePageSize int    `env:"DATABASE_PAGE_SIZE,required"`
 }
 
 func New() (*Config, error) {
