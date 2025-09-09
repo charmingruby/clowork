@@ -32,6 +32,36 @@ func (_m *MessageRepo) Create(ctx context.Context, message model.Message) error 
 	return r0
 }
 
+// ListByRoomID provides a mock function with given fields: ctx, roomID, page
+func (_m *MessageRepo) ListByRoomID(ctx context.Context, roomID string, page int) ([]model.Message, error) {
+	ret := _m.Called(ctx, roomID, page)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListByRoomID")
+	}
+
+	var r0 []model.Message
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, int) ([]model.Message, error)); ok {
+		return rf(ctx, roomID, page)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, int) []model.Message); ok {
+		r0 = rf(ctx, roomID, page)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]model.Message)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, int) error); ok {
+		r1 = rf(ctx, roomID, page)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // NewMessageRepo creates a new instance of MessageRepo. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMessageRepo(t interface {

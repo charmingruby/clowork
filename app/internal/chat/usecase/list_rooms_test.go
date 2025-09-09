@@ -17,7 +17,7 @@ func Test_ListRooms(t *testing.T) {
 	page := 1
 	amountOfRooms := 3
 
-	var rooms []model.Room
+	rooms := make([]model.Room, 0, amountOfRooms)
 	for range amountOfRooms {
 		rooms = append(rooms, model.NewRoom(dummyName, dummyTopic))
 	}

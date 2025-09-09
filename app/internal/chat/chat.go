@@ -17,7 +17,7 @@ type Input struct {
 }
 
 func New(in Input) error {
-	messageRepo, err := postgres.NewMessageRepo(in.DB)
+	messageRepo, err := postgres.NewMessageRepo(in.DB, in.DatabasePageSize)
 	if err != nil {
 		return err
 	}

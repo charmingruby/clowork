@@ -121,10 +121,10 @@ var ChatStream_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	ChatAPI_CreateRoom_FullMethodName     = "/chat.ChatAPI/CreateRoom"
-	ChatAPI_ListRooms_FullMethodName      = "/chat.ChatAPI/ListRooms"
-	ChatAPI_GetRoomHistory_FullMethodName = "/chat.ChatAPI/GetRoomHistory"
-	ChatAPI_GetRoomMembers_FullMethodName = "/chat.ChatAPI/GetRoomMembers"
+	ChatAPI_CreateRoom_FullMethodName       = "/chat.ChatAPI/CreateRoom"
+	ChatAPI_ListRooms_FullMethodName        = "/chat.ChatAPI/ListRooms"
+	ChatAPI_ListRoomMessages_FullMethodName = "/chat.ChatAPI/ListRoomMessages"
+	ChatAPI_ListRoomMembers_FullMethodName  = "/chat.ChatAPI/ListRoomMembers"
 )
 
 // ChatAPIClient is the client API for ChatAPI service.
@@ -133,8 +133,8 @@ const (
 type ChatAPIClient interface {
 	CreateRoom(ctx context.Context, in *CreateRoomRequest, opts ...grpc.CallOption) (*CreateRoomReply, error)
 	ListRooms(ctx context.Context, in *ListRoomsRequest, opts ...grpc.CallOption) (*ListRoomsReply, error)
-	GetRoomHistory(ctx context.Context, in *GetRoomHistoryRequest, opts ...grpc.CallOption) (*GetRoomHistoryReply, error)
-	GetRoomMembers(ctx context.Context, in *GetRoomMembersRequest, opts ...grpc.CallOption) (*GetRoomMembersReply, error)
+	ListRoomMessages(ctx context.Context, in *ListRoomMessagesRequest, opts ...grpc.CallOption) (*ListRoomMessagesReply, error)
+	ListRoomMembers(ctx context.Context, in *ListRoomMembersRequest, opts ...grpc.CallOption) (*ListRoomMembersReply, error)
 }
 
 type chatAPIClient struct {
@@ -165,20 +165,20 @@ func (c *chatAPIClient) ListRooms(ctx context.Context, in *ListRoomsRequest, opt
 	return out, nil
 }
 
-func (c *chatAPIClient) GetRoomHistory(ctx context.Context, in *GetRoomHistoryRequest, opts ...grpc.CallOption) (*GetRoomHistoryReply, error) {
+func (c *chatAPIClient) ListRoomMessages(ctx context.Context, in *ListRoomMessagesRequest, opts ...grpc.CallOption) (*ListRoomMessagesReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetRoomHistoryReply)
-	err := c.cc.Invoke(ctx, ChatAPI_GetRoomHistory_FullMethodName, in, out, cOpts...)
+	out := new(ListRoomMessagesReply)
+	err := c.cc.Invoke(ctx, ChatAPI_ListRoomMessages_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *chatAPIClient) GetRoomMembers(ctx context.Context, in *GetRoomMembersRequest, opts ...grpc.CallOption) (*GetRoomMembersReply, error) {
+func (c *chatAPIClient) ListRoomMembers(ctx context.Context, in *ListRoomMembersRequest, opts ...grpc.CallOption) (*ListRoomMembersReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetRoomMembersReply)
-	err := c.cc.Invoke(ctx, ChatAPI_GetRoomMembers_FullMethodName, in, out, cOpts...)
+	out := new(ListRoomMembersReply)
+	err := c.cc.Invoke(ctx, ChatAPI_ListRoomMembers_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -191,8 +191,8 @@ func (c *chatAPIClient) GetRoomMembers(ctx context.Context, in *GetRoomMembersRe
 type ChatAPIServer interface {
 	CreateRoom(context.Context, *CreateRoomRequest) (*CreateRoomReply, error)
 	ListRooms(context.Context, *ListRoomsRequest) (*ListRoomsReply, error)
-	GetRoomHistory(context.Context, *GetRoomHistoryRequest) (*GetRoomHistoryReply, error)
-	GetRoomMembers(context.Context, *GetRoomMembersRequest) (*GetRoomMembersReply, error)
+	ListRoomMessages(context.Context, *ListRoomMessagesRequest) (*ListRoomMessagesReply, error)
+	ListRoomMembers(context.Context, *ListRoomMembersRequest) (*ListRoomMembersReply, error)
 	mustEmbedUnimplementedChatAPIServer()
 }
 
@@ -209,11 +209,11 @@ func (UnimplementedChatAPIServer) CreateRoom(context.Context, *CreateRoomRequest
 func (UnimplementedChatAPIServer) ListRooms(context.Context, *ListRoomsRequest) (*ListRoomsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListRooms not implemented")
 }
-func (UnimplementedChatAPIServer) GetRoomHistory(context.Context, *GetRoomHistoryRequest) (*GetRoomHistoryReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetRoomHistory not implemented")
+func (UnimplementedChatAPIServer) ListRoomMessages(context.Context, *ListRoomMessagesRequest) (*ListRoomMessagesReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListRoomMessages not implemented")
 }
-func (UnimplementedChatAPIServer) GetRoomMembers(context.Context, *GetRoomMembersRequest) (*GetRoomMembersReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetRoomMembers not implemented")
+func (UnimplementedChatAPIServer) ListRoomMembers(context.Context, *ListRoomMembersRequest) (*ListRoomMembersReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListRoomMembers not implemented")
 }
 func (UnimplementedChatAPIServer) mustEmbedUnimplementedChatAPIServer() {}
 func (UnimplementedChatAPIServer) testEmbeddedByValue()                 {}
@@ -272,38 +272,38 @@ func _ChatAPI_ListRooms_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ChatAPI_GetRoomHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetRoomHistoryRequest)
+func _ChatAPI_ListRoomMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRoomMessagesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ChatAPIServer).GetRoomHistory(ctx, in)
+		return srv.(ChatAPIServer).ListRoomMessages(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ChatAPI_GetRoomHistory_FullMethodName,
+		FullMethod: ChatAPI_ListRoomMessages_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatAPIServer).GetRoomHistory(ctx, req.(*GetRoomHistoryRequest))
+		return srv.(ChatAPIServer).ListRoomMessages(ctx, req.(*ListRoomMessagesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ChatAPI_GetRoomMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetRoomMembersRequest)
+func _ChatAPI_ListRoomMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRoomMembersRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ChatAPIServer).GetRoomMembers(ctx, in)
+		return srv.(ChatAPIServer).ListRoomMembers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ChatAPI_GetRoomMembers_FullMethodName,
+		FullMethod: ChatAPI_ListRoomMembers_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatAPIServer).GetRoomMembers(ctx, req.(*GetRoomMembersRequest))
+		return srv.(ChatAPIServer).ListRoomMembers(ctx, req.(*ListRoomMembersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -324,12 +324,12 @@ var ChatAPI_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ChatAPI_ListRooms_Handler,
 		},
 		{
-			MethodName: "GetRoomHistory",
-			Handler:    _ChatAPI_GetRoomHistory_Handler,
+			MethodName: "ListRoomMessages",
+			Handler:    _ChatAPI_ListRoomMessages_Handler,
 		},
 		{
-			MethodName: "GetRoomMembers",
-			Handler:    _ChatAPI_GetRoomMembers_Handler,
+			MethodName: "ListRoomMembers",
+			Handler:    _ChatAPI_ListRoomMembers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -18,6 +18,16 @@ type CreateRoomInput struct {
 	Topic string
 }
 
+type ListRoomMessagesInput struct {
+	Page   int
+	RoomID string
+}
+
+type ListRoomMessagesOutput struct {
+	Results  int
+	Messages []model.Message
+}
+
 type JoinRoomInput struct {
 	Nickname string
 	Hostname string
@@ -42,6 +52,7 @@ type SendMessageInput struct {
 
 type Service interface {
 	CreateRoom(ctx context.Context, in CreateRoomInput) (string, error)
+	ListRoomMessages(ctx context.Context, in ListRoomMessagesInput) (ListRoomMessagesOutput, error)
 	JoinRoom(ctx context.Context, in JoinRoomInput) (string, error)
 	LeaveRoom(ctx context.Context, in LeaveRoomInput) error
 	ListRooms(ctx context.Context, page int) (ListRoomsOutput, error)

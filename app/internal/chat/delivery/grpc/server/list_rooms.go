@@ -12,7 +12,7 @@ import (
 )
 
 func (s *Server) ListRooms(ctx context.Context, req *pb.ListRoomsRequest) (*pb.ListRoomsReply, error) {
-	output, err := s.usecase.ListRooms(ctx, int(req.Page))
+	op, err := s.usecase.ListRooms(ctx, int(req.Page))
 	if err != nil {
 		var databaseErr *core.DatabaseError
 		if errors.As(err, &databaseErr) {
@@ -26,14 +26,14 @@ func (s *Server) ListRooms(ctx context.Context, req *pb.ListRoomsRequest) (*pb.L
 		return nil, status.Error(codes.Internal, "internal server error")
 	}
 
-	rooms := make([]*pb.Room, output.Results)
+	rooms := make([]*pb.Room, op.Results)
 
-	for idx, rm := range output.Rooms {
+	for idx, rm := range op.Rooms {
 		rooms[idx] = mapper.RoomToProtobuf(rm)
 	}
 
 	return &pb.ListRoomsReply{
 		Rooms:   rooms,
-		Results: int64(output.Results),
+		Results: int64(op.Results),
 	}, nil
 }

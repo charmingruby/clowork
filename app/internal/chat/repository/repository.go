@@ -23,5 +23,5 @@ type RoomMemberRepo interface {
 
 type MessageRepo interface {
 	Create(ctx context.Context, message model.Message) error
-	// ListByRoomID(ctx context.Context, roomID string, page int) ([]model.Message, error)
+	ListByRoomID(ctx context.Context, roomID string, page int) ([]model.Message, error)
 }
