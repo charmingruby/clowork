@@ -27,7 +27,7 @@ func main() {
 
 	log.Info("loading environment variables...")
 
-	cfg, err := config.New()
+	cfg, err := config.NewAPI()
 	if err != nil {
 		log.Error("failed to loading environment variables", "error", err)
 		failAndExit(log, nil, nil, nil)
@@ -51,8 +51,7 @@ func main() {
 
 	restSrv, r := rest.New(cfg.RestServerPort)
 
-	grpcAddr := fmt.Sprintf("%s:%s", cfg.GRPCServerHost, cfg.GRPCServerPort)
-	grpcSrv := grpc.New(grpcAddr)
+	grpcSrv := grpc.New(cfg.GRPCServerAddress)
 
 	platform.New(r, db)
 
@@ -76,7 +75,7 @@ func main() {
 	}()
 
 	go func() {
-		log.Info("gRPC server is running...", "port", cfg.GRPCServerPort)
+		log.Info("gRPC server is running...", "address", cfg.GRPCServerAddress)
 
 		if err := grpcSrv.Start(); err != nil {
 			log.Error("failed starting gRPC server", "error", err)
