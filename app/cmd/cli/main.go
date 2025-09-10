@@ -1,6 +1,10 @@
 package main
 
 import (
+	"context"
+	"os"
+	"os/signal"
+
 	"github.com/charmingruby/clowork/config"
 	"github.com/charmingruby/clowork/internal/chat/delivery/grpc/client"
 	"github.com/joho/godotenv"
@@ -13,22 +17,49 @@ func main() {
 
 	cfg, err := config.NewCLI()
 	if err != nil {
-		panic(err)
+		failAndExit(nil)
 	}
 
-	conn, err := grpc.NewClient(
+	grpcConn, err := grpc.NewClient(
 		cfg.GRPCServerAddress,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		panic(err)
+		failAndExit(nil)
 	}
 
-	cl := client.New(conn)
-	id, err := cl.CreateRoom()
+	client := client.New(grpcConn)
+	err = client.Stream(context.TODO())
 	if err != nil {
-		panic(err)
+		failAndExit(grpcConn)
 	}
 
-	println(id)
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+
+	signal := gracefulShutdown(grpcConn)
+
+	os.Exit(signal)
+}
+
+func failAndExit(grpcConn *grpc.ClientConn) {
+	gracefulShutdown(grpcConn)
+	os.Exit(1)
+}
+
+func gracefulShutdown(grpcConn *grpc.ClientConn) int {
+	var hasError bool
+
+	if grpcConn != nil {
+		if err := grpcConn.Close(); err != nil {
+			hasError = true
+		}
+	}
+
+	if hasError {
+		return 1
+	}
+
+	return 0
 }
