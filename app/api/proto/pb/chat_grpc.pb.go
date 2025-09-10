@@ -26,7 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ChatStreamClient interface {
-	Stream(ctx context.Context, in *ClientEvent, opts ...grpc.CallOption) (*ServerEvent, error)
+	Stream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ClientEvent, ServerEvent], error)
 }
 
 type chatStreamClient struct {
@@ -37,21 +37,24 @@ func NewChatStreamClient(cc grpc.ClientConnInterface) ChatStreamClient {
 	return &chatStreamClient{cc}
 }
 
-func (c *chatStreamClient) Stream(ctx context.Context, in *ClientEvent, opts ...grpc.CallOption) (*ServerEvent, error) {
+func (c *chatStreamClient) Stream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ClientEvent, ServerEvent], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ServerEvent)
-	err := c.cc.Invoke(ctx, ChatStream_Stream_FullMethodName, in, out, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &ChatStream_ServiceDesc.Streams[0], ChatStream_Stream_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &grpc.GenericClientStream[ClientEvent, ServerEvent]{ClientStream: stream}
+	return x, nil
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ChatStream_StreamClient = grpc.BidiStreamingClient[ClientEvent, ServerEvent]
 
 // ChatStreamServer is the server API for ChatStream service.
 // All implementations must embed UnimplementedChatStreamServer
 // for forward compatibility.
 type ChatStreamServer interface {
-	Stream(context.Context, *ClientEvent) (*ServerEvent, error)
+	Stream(grpc.BidiStreamingServer[ClientEvent, ServerEvent]) error
 	mustEmbedUnimplementedChatStreamServer()
 }
 
@@ -62,8 +65,8 @@ type ChatStreamServer interface {
 // pointer dereference when methods are called.
 type UnimplementedChatStreamServer struct{}
 
-func (UnimplementedChatStreamServer) Stream(context.Context, *ClientEvent) (*ServerEvent, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Stream not implemented")
+func (UnimplementedChatStreamServer) Stream(grpc.BidiStreamingServer[ClientEvent, ServerEvent]) error {
+	return status.Errorf(codes.Unimplemented, "method Stream not implemented")
 }
 func (UnimplementedChatStreamServer) mustEmbedUnimplementedChatStreamServer() {}
 func (UnimplementedChatStreamServer) testEmbeddedByValue()                    {}
@@ -86,23 +89,12 @@ func RegisterChatStreamServer(s grpc.ServiceRegistrar, srv ChatStreamServer) {
 	s.RegisterService(&ChatStream_ServiceDesc, srv)
 }
 
-func _ChatStream_Stream_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ClientEvent)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ChatStreamServer).Stream(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ChatStream_Stream_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatStreamServer).Stream(ctx, req.(*ClientEvent))
-	}
-	return interceptor(ctx, in, info, handler)
+func _ChatStream_Stream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ChatStreamServer).Stream(&grpc.GenericServerStream[ClientEvent, ServerEvent]{ServerStream: stream})
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ChatStream_StreamServer = grpc.BidiStreamingServer[ClientEvent, ServerEvent]
 
 // ChatStream_ServiceDesc is the grpc.ServiceDesc for ChatStream service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -110,13 +102,15 @@ func _ChatStream_Stream_Handler(srv interface{}, ctx context.Context, dec func(i
 var ChatStream_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "chat.ChatStream",
 	HandlerType: (*ChatStreamServer)(nil),
-	Methods: []grpc.MethodDesc{
+	Methods:     []grpc.MethodDesc{},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "Stream",
-			Handler:    _ChatStream_Stream_Handler,
+			StreamName:    "Stream",
+			Handler:       _ChatStream_Stream_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "chat.proto",
 }
 

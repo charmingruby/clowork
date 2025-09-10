@@ -7,7 +7,7 @@ option go_package = "github.com/charmingruby/clowork/api/proto/pb";
 import "google/protobuf/timestamp.proto";
 
 service ChatStream {
-    rpc Stream(ClientEvent) returns (ServerEvent);
+    rpc Stream(stream ClientEvent) returns (stream ServerEvent);
 }
 
 service ChatAPI {
@@ -93,7 +93,7 @@ message PresenceUpdate {
 }
 
 message Ack {
-    string id = 1;
+    string client_msg_id = 1;
     bool success = 2;
     string error = 3;
 }
