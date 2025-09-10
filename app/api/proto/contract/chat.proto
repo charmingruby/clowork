@@ -8,63 +8,144 @@ import "google/protobuf/timestamp.proto";
 
 service ChatStream {
     rpc Stream(ClientEvent) returns (ServerEvent);
-};
+}
 
 service ChatAPI {
     rpc CreateRoom(CreateRoomRequest) returns (CreateRoomReply);
     rpc ListRooms(ListRoomsRequest) returns (ListRoomsReply);
     rpc ListRoomMessages(ListRoomMessagesRequest) returns (ListRoomMessagesReply);
     rpc ListRoomMembers(ListRoomMembersRequest) returns (ListRoomMembersReply);
-};
+}
 
-message ClientEvent {};
+// Streaming Contracts
 
-message ServerEvent {};
+message ClientEvent {
+    string client_msg_id = 1;
+    uint64 last_event_seq = 2;
+    
+    oneof event {
+        JoinRoom join_room = 3;
+        LeaveRoom leave_room = 4;
+        SendMessage send_message = 5;
+        RequestPresence request_presence = 7;
+        Heartbeat heartbeat = 8;
+    }
+}
+
+message ServerEvent {
+    uint64 event_seq = 1;
+
+    oneof event {
+        RoomJoined room_joined = 2;
+        RoomLeft room_left = 3;
+        MessagePosted message_posted = 4;
+        PresenceUpdate presence_update = 6;
+        Ack ack = 7;
+        Heartbeat heartbeat = 8;
+    }
+}
+
+message JoinRoom {
+    string room_id = 1;
+    string member_id = 2;
+    string nickname = 3;
+}
+
+message LeaveRoom {
+    string room_id = 1;
+    string member_id = 2;
+}
+
+message SendMessage {
+    string room_id = 1;
+    string member_id = 2;
+    string content = 3;
+}
+
+message RequestPresence {
+    string room_id = 1;
+}
+
+message Heartbeat {
+    string member_id = 1;
+    google.protobuf.Timestamp beat_at = 2;
+}
+
+message RoomJoined {
+    string room_id = 1;
+    string member_id = 2;
+    string nickname = 3;
+}
+
+message RoomLeft {
+    string room_id = 1;
+    string member_id = 2;
+}
+
+message MessagePosted {
+    string id = 1;
+    Message message = 2;
+}
+
+message PresenceUpdate {
+    string room_id = 1;
+    repeated RoomMember members = 2;
+}
+
+message Ack {
+    string id = 1;
+    bool success = 2;
+    string error = 3;
+}
+
+// Non-Streaming Contracts
 
 message CreateRoomRequest {
     string name = 1;
     string topic = 2; 
-};
+}
 
 message CreateRoomReply {
     string room_id = 1;
-};
+}
 
 message ListRoomsRequest {
     int64 page = 1; 
-};
+}
 
 message ListRoomsReply {
     repeated Room rooms = 1;
     int64 results = 2;
-};
+}
 
 message ListRoomMessagesRequest {
     int64 page = 1; 
     string room_id = 2;
-};
+}
 
 message ListRoomMessagesReply {
     repeated Message messages = 1;
     int64 results = 2;
-};
+}
 
 message ListRoomMembersRequest {
     int64 page = 1; 
     string room_id = 2;
-};
+}
 
 message ListRoomMembersReply {
     repeated RoomMember members = 1;
     int64 results = 2;
-};
+}
+
+// Common Models
 
 message Room {
     string id = 1;
     string name = 2;
     string topic = 3;
     google.protobuf.Timestamp created_at = 4;
-};
+}
 
 message Message {
     string id = 1;
@@ -72,7 +153,7 @@ message Message {
     string room_id = 3;
     string sender_id = 4;
     google.protobuf.Timestamp created_at = 5;
-};
+}
 
 message RoomMember {
     string id = 1;
@@ -82,4 +163,4 @@ message RoomMember {
     string room_id = 5;
     google.protobuf.Timestamp created_at = 6;
     optional google.protobuf.Timestamp updated_at = 7;
-};
+}
