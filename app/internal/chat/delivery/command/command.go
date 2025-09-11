@@ -6,21 +6,14 @@ import (
 )
 
 type Command struct {
-	client  *client.Client
-	session *session
-	cmd     *cobra.Command
-}
-
-type session struct {
-	Nickname string
-	Hostname string
+	client *client.Client
+	cmd    *cobra.Command
 }
 
 func New(cmd *cobra.Command, client *client.Client) *Command {
 	return &Command{
-		client:  client,
-		session: &session{},
-		cmd:     cmd,
+		client: client,
+		cmd:    cmd,
 	}
 }
 
@@ -41,9 +34,16 @@ func (c *Command) Register() {
 		c.CreateRoom(),
 	)
 
+	chatWrapper := &cobra.Command{
+		Use: "chat",
+	}
+	chatWrapper.AddCommand(
+		c.JoinRoom(),
+	)
+
 	c.cmd.AddCommand(
-		c.Auth(),
 		listWrapper,
 		createWrapper,
+		chatWrapper,
 	)
 }

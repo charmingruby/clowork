@@ -47,8 +47,8 @@ message ServerEvent {
 
 message JoinRoom {
     string room_id = 1;
-    string member_id = 2;
-    string nickname = 3;
+    string nickname = 2;
+    string hostname = 3;
 }
 
 message LeaveRoom {

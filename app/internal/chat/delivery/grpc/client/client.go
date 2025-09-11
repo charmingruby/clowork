@@ -5,9 +5,19 @@ import (
 	"google.golang.org/grpc"
 )
 
+type session struct {
+	nickname      string
+	hostname      string
+	currentRoomID string
+	lastEventSeq  int
+}
+
 type Client struct {
 	apiClient    pb.ChatAPIClient
 	streamClient pb.ChatStreamClient
+
+	stream  grpc.BidiStreamingClient[pb.ClientEvent, pb.ServerEvent]
+	session *session
 }
 
 func New(conn *grpc.ClientConn) *Client {
@@ -17,5 +27,12 @@ func New(conn *grpc.ClientConn) *Client {
 	return &Client{
 		apiClient:    apiClient,
 		streamClient: streamClient,
+		stream:       nil,
+		session: &session{
+			nickname:      "",
+			hostname:      "",
+			currentRoomID: "",
+			lastEventSeq:  0,
+		},
 	}
 }

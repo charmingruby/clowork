@@ -26,7 +26,11 @@ func (s *Server) Stream(stream grpc.BidiStreamingServer[pb.ClientEvent, pb.Serve
 		if err := stream.Send(&pb.ServerEvent{
 			EventSeq: 1,
 			Event: &pb.ServerEvent_Ack{
-				Ack: &pb.Ack{Id: in.ClientMsgId},
+				Ack: &pb.Ack{
+					ClientMsgId: in.ClientMsgId,
+					Success:     true,
+					Error:       "",
+				},
 			},
 		}); err != nil {
 			return err

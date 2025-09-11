@@ -30,7 +30,7 @@ func (c *Command) CreateRoom() *cobra.Command {
 			}
 
 			print(
-				fmt.Sprintf("Room created successfully; id:%s", id),
+				fmt.Sprintf("Room created successfully; id: %s", id),
 				1,
 				true,
 				ResultSymbol,
