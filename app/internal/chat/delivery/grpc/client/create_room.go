@@ -6,11 +6,8 @@ import (
 	"github.com/charmingruby/clowork/api/proto/pb"
 )
 
-func (c *Client) CreateRoom() (string, error) {
-	rep, err := c.apiClient.CreateRoom(context.Background(), &pb.CreateRoomRequest{
-		Name:  "room",
-		Topic: "topic",
-	})
+func (c *Client) CreateRoom(in *pb.CreateRoomRequest) (string, error) {
+	rep, err := c.apiClient.CreateRoom(context.Background(), in)
 	if err != nil {
 		return "", err
 	}

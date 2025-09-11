@@ -7,6 +7,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type CommandType string
+
+const (
+	DefaultCommandType CommandType = ">"
+	FailureCommandType CommandType = "⚠️"
+)
+
 type Command struct {
 	client  *client.Client
 	session *session
@@ -27,22 +34,38 @@ func New(cmd *cobra.Command, client *client.Client) *Command {
 }
 
 func (c *Command) Register() {
+	listWrapper := &cobra.Command{
+		Use: "list",
+	}
+	listWrapper.AddCommand(
+		c.ListRooms(),
+	)
+
+	createWrapper := &cobra.Command{
+		Use: "create",
+	}
+	createWrapper.AddCommand(
+		c.CreateRoom(),
+	)
+
 	c.cmd.AddCommand(
 		c.Auth(),
+		listWrapper,
+		createWrapper,
 	)
 }
 
-func Print(msg string, ident int, breakline bool) {
+func Print(msg string, ident int, breakline bool, cmdType CommandType) {
 	var identation string
 
 	if ident == 0 {
-		identation = ">"
+		identation = string(cmdType)
 	} else {
 		for i := range ident {
 			identation += "  "
 
 			if i == ident-1 {
-				identation += ">"
+				identation += string(cmdType)
 				continue
 			}
 		}

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"fmt"
 	"os"
@@ -9,6 +8,7 @@ import (
 
 	"github.com/charmingruby/clowork/internal/chat/delivery/command"
 	"github.com/charmingruby/clowork/internal/chat/delivery/grpc/client"
+	"github.com/chzyer/readline"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -35,19 +35,30 @@ func main() {
 		os.Exit(1)
 	}
 
-	rootCmd := &cobra.Command{}
+	rootCmd := &cobra.Command{
+		Use: "Clowork",
+	}
 
 	cmdHandler := command.New(rootCmd, client)
 	cmdHandler.Register()
 
-	scanner := bufio.NewScanner(os.Stdin)
+	rl, err := readline.NewEx(&readline.Config{
+		Prompt:          "> ",
+		InterruptPrompt: "^C",
+		EOFPrompt:       "exit",
+	})
+	if err != nil {
+		os.Exit(1)
+	}
+	defer rl.Close()
+
 	for {
-		command.Print("", 0, false)
-		if !scanner.Scan() {
+		line, err := rl.Readline()
+		if err != nil {
 			break
 		}
 
-		line := strings.TrimSpace(scanner.Text())
+		line = strings.TrimSpace(line)
 		if line == "" {
 			continue
 		}
@@ -55,12 +66,15 @@ func main() {
 		args := strings.Fields(line)
 
 		rootCmd.SetArgs(args)
+		rootCmd.SilenceErrors = true
+		rootCmd.SilenceUsage = true
 
 		if err := rootCmd.Execute(); err != nil {
 			command.Print(
-				fmt.Sprintf("⚠️ Error: %s", err.Error()),
+				fmt.Sprintf("Error: %s", err.Error()),
 				0,
 				true,
+				command.FailureCommandType,
 			)
 		}
 	}

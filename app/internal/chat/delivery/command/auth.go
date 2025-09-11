@@ -18,7 +18,12 @@ func (c *Command) Auth() *cobra.Command {
 			}
 
 			if nickname == "" {
-				Print("Enter your nickname: ", 1, false)
+				Print(
+					"Enter your nickname: ",
+					1,
+					false,
+					DefaultCommandType,
+				)
 
 				reader := bufio.NewReader(os.Stdin)
 
