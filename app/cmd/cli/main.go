@@ -17,7 +17,7 @@ func main() {
 
 	cfg, err := config.NewCLI()
 	if err != nil {
-		failAndExit(nil)
+		os.Exit(1)
 	}
 
 	grpcConn, err := grpc.NewClient(
@@ -25,41 +25,17 @@ func main() {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		failAndExit(nil)
+		os.Exit(1)
 	}
+	defer grpcConn.Close()
 
 	client := client.New(grpcConn)
 	err = client.Stream(context.TODO())
 	if err != nil {
-		failAndExit(grpcConn)
+		os.Exit(1)
 	}
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
 	<-quit
-
-	signal := gracefulShutdown(grpcConn)
-
-	os.Exit(signal)
-}
-
-func failAndExit(grpcConn *grpc.ClientConn) {
-	gracefulShutdown(grpcConn)
-	os.Exit(1)
-}
-
-func gracefulShutdown(grpcConn *grpc.ClientConn) int {
-	var hasError bool
-
-	if grpcConn != nil {
-		if err := grpcConn.Close(); err != nil {
-			hasError = true
-		}
-	}
-
-	if hasError {
-		return 1
-	}
-
-	return 0
 }

@@ -17,7 +17,11 @@ func (s *Server) Stream(stream grpc.BidiStreamingServer[pb.ClientEvent, pb.Serve
 			return err
 		}
 
-		println(in)
+		s.log.Info("event received",
+			"client_msg_id", in.GetClientMsgId(),
+			"last_event_seq", in.GetLastEventSeq(),
+			"event", in.GetEvent(),
+		)
 
 		if err := stream.Send(&pb.ServerEvent{
 			EventSeq: 1,

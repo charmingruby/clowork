@@ -25,7 +25,6 @@ func (c *Client) Stream(ctx context.Context) error {
 		if err != nil {
 			return
 		}
-
 	}()
 
 	for {
