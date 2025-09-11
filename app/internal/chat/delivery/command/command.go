@@ -39,6 +39,8 @@ func (c *Command) Register() {
 	}
 	listWrapper.AddCommand(
 		c.ListRooms(),
+		c.ListMessages(),
+		c.ListRoomMembers(),
 	)
 
 	createWrapper := &cobra.Command{

@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS rooms (
     id VARCHAR PRIMARY KEY,
-    name VARCHAR NOT NULL,
+    name VARCHAR NOT NULL UNIQUE,
     topic VARCHAR,
     created_at TIMESTAMP NOT NULL
 );

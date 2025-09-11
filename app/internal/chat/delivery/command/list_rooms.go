@@ -33,7 +33,7 @@ func (c *Command) ListRooms() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().IntVarP(&page, "page", "p", 0, "Page of the rooms")
+	cmd.Flags().IntVarP(&page, "page", "p", 0, "Page of rooms")
 
 	return cmd
 }

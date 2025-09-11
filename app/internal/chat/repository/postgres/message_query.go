@@ -15,7 +15,7 @@ func messageQueries() map[string]string {
 		listMessagesByRoomID: `
 		SELECT * FROM messages
 		WHERE room_id = $1
-		ORDER BY created_at DESC
+		ORDER BY created_at ASC
 		OFFSET $2
 		LIMIT $3`,
 	}
