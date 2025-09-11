@@ -21,11 +21,11 @@ func (c *Command) CreateRoom() *cobra.Command {
 				return err
 			}
 
-			Print(
-				fmt.Sprintf("room created, id=%s", id),
+			print(
+				fmt.Sprintf("Room created successfully; id:%s", id),
 				1,
 				true,
-				DefaultCommandType,
+				ResultSymbol,
 			)
 
 			return nil

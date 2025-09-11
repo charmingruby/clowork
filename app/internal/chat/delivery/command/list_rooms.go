@@ -20,14 +20,25 @@ func (c *Command) ListRooms() *cobra.Command {
 				return err
 			}
 
-			for idx, r := range rooms {
-				Print(
-					fmt.Sprintf("%d. %s [%s]", idx+1, r.GetName(), r.GetTopic()),
-					1,
-					true,
-					DefaultCommandType,
-				)
-			}
+			list(func() {
+				for idx, r := range rooms {
+					print(
+						fmt.Sprintf("%d. [%s] %s", idx+1, r.GetTopic(), r.GetName()),
+						1,
+						true,
+						ResultSymbol,
+					)
+
+					print(
+						fmt.Sprintf("ID: %s", r.GetId()),
+						2,
+						true,
+						ResultSymbol,
+					)
+
+					maybeSeparate(idx, len(rooms))
+				}
+			})
 
 			return nil
 		},

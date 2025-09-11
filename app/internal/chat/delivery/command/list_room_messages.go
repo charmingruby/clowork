@@ -22,14 +22,16 @@ func (c *Command) ListMessages() *cobra.Command {
 				return err
 			}
 
-			for _, m := range messages {
-				Print(
-					fmt.Sprintf("%s: %s", m.GetSenderId(), m.GetContent()),
-					1,
-					true,
-					DefaultCommandType,
-				)
-			}
+			list(func() {
+				for _, m := range messages {
+					print(
+						fmt.Sprintf("%s: %s", m.GetSenderId(), m.GetContent()),
+						1,
+						true,
+						ResultSymbol,
+					)
+				}
+			})
 
 			return nil
 		},

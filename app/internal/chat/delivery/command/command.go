@@ -1,17 +1,8 @@
 package command
 
 import (
-	"fmt"
-
 	"github.com/charmingruby/clowork/internal/chat/delivery/grpc/client"
 	"github.com/spf13/cobra"
-)
-
-type CommandType string
-
-const (
-	DefaultCommandType CommandType = ">"
-	FailureCommandType CommandType = "⚠️"
 )
 
 type Command struct {
@@ -55,28 +46,4 @@ func (c *Command) Register() {
 		listWrapper,
 		createWrapper,
 	)
-}
-
-func Print(msg string, ident int, breakline bool, cmdType CommandType) {
-	var identation string
-
-	if ident == 0 {
-		identation = string(cmdType)
-	} else {
-		for i := range ident {
-			identation += "  "
-
-			if i == ident-1 {
-				identation += string(cmdType)
-				continue
-			}
-		}
-	}
-
-	if breakline {
-		fmt.Printf("%s %s \n", identation, msg)
-		return
-	}
-
-	fmt.Printf("%s %s", identation, msg)
 }

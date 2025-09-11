@@ -43,7 +43,7 @@ func main() {
 	cmdHandler.Register()
 
 	rl, err := readline.NewEx(&readline.Config{
-		Prompt:          "> ",
+		Prompt:          fmt.Sprintf("%s ", command.InputSymbol),
 		InterruptPrompt: "^C",
 		EOFPrompt:       "exit",
 	})
@@ -70,12 +70,7 @@ func main() {
 		rootCmd.SilenceUsage = true
 
 		if err := rootCmd.Execute(); err != nil {
-			command.Print(
-				fmt.Sprintf("Error: %s", err.Error()),
-				0,
-				true,
-				command.FailureCommandType,
-			)
+			command.ReportFailure(err)
 		}
 	}
 }

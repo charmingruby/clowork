@@ -1,38 +1,20 @@
 package command
 
 import (
-	"bufio"
+	"fmt"
 	"os"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
 
 func (c *Command) Auth() *cobra.Command {
+
 	cmd := &cobra.Command{
 		Use: "auth",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			nickname, err := cmd.Flags().GetString("nickname")
 			if err != nil {
 				return err
-			}
-
-			if nickname == "" {
-				Print(
-					"Enter your nickname: ",
-					1,
-					false,
-					DefaultCommandType,
-				)
-
-				reader := bufio.NewReader(os.Stdin)
-
-				input, err := reader.ReadString('\n')
-				if err != nil {
-					return err
-				}
-
-				nickname = strings.TrimSpace(input)
 			}
 
 			hostname, err := os.Hostname()
@@ -42,6 +24,13 @@ func (c *Command) Auth() *cobra.Command {
 
 			c.session.Nickname = nickname
 			c.session.Hostname = hostname
+
+			print(
+				fmt.Sprintf("Authenticated successfully (%s:%s)", c.session.Nickname, c.session.Hostname),
+				1,
+				true,
+				ResultSymbol,
+			)
 
 			return nil
 		},

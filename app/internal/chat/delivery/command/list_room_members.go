@@ -22,14 +22,18 @@ func (c *Command) ListRoomMembers() *cobra.Command {
 				return err
 			}
 
-			for idx, m := range members {
-				Print(
-					fmt.Sprintf("%d. %s [%s]", idx+1, m.GetNickname(), m.GetHostname()),
-					1,
-					true,
-					DefaultCommandType,
-				)
-			}
+			list(func() {
+				for idx, m := range members {
+					print(
+						fmt.Sprintf("%d. %s [%s]", idx+1, m.GetNickname(), m.GetHostname()),
+						1,
+						true,
+						ResultSymbol,
+					)
+
+					maybeSeparate(idx, len(members))
+				}
+			})
 
 			return nil
 		},
