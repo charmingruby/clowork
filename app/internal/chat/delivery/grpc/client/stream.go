@@ -28,15 +28,14 @@ func (c *Client) Stream(ctx context.Context) error {
 	}()
 
 	for {
-		in, err := stream.Recv()
+		_, err := stream.Recv()
 		if err == io.EOF {
 			break
 		}
+
 		if err != nil {
 			return err
 		}
-
-		println(in)
 	}
 
 	return nil
