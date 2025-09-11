@@ -8,15 +8,22 @@ import (
 )
 
 func (c *Command) ListRoomMembers() *cobra.Command {
-	var roomID string
-	var page int
-
 	cmd := &cobra.Command{
 		Use: "members",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			room, err := cmd.Flags().GetString("room")
+			if err != nil {
+				return err
+			}
+
+			page, err := cmd.Flags().GetInt("page")
+			if err != nil {
+				return err
+			}
+
 			members, err := c.client.ListRoomMembers(&pb.ListRoomMembersRequest{
 				Page:   int64(page),
-				RoomId: roomID,
+				RoomId: room,
 			})
 			if err != nil {
 				return err
@@ -39,8 +46,8 @@ func (c *Command) ListRoomMembers() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVarP(&roomID, "room", "r", "", "Room id")
-	cmd.Flags().IntVarP(&page, "page", "p", 0, "Page of members")
+	cmd.Flags().String("room", "", "Room ID")
+	cmd.Flags().Int("page", 0, "Page")
 
 	return cmd
 }

@@ -8,11 +8,14 @@ import (
 )
 
 func (c *Command) ListRooms() *cobra.Command {
-	var page int
-
 	cmd := &cobra.Command{
 		Use: "rooms",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			page, err := cmd.Flags().GetInt("page")
+			if err != nil {
+				return err
+			}
+
 			rooms, err := c.client.ListRooms(&pb.ListRoomsRequest{
 				Page: int64(page),
 			})
@@ -44,7 +47,7 @@ func (c *Command) ListRooms() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().IntVarP(&page, "page", "p", 0, "Page of rooms")
+	cmd.Flags().Int("page", 0, "Page")
 
 	return cmd
 }

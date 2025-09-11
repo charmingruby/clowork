@@ -8,14 +8,22 @@ import (
 )
 
 func (c *Command) CreateRoom() *cobra.Command {
-	var roomName, roomTopic string
-
 	cmd := &cobra.Command{
 		Use: "room",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			name, err := cmd.Flags().GetString("name")
+			if err != nil {
+				return err
+			}
+
+			topic, err := cmd.Flags().GetString("topic")
+			if err != nil {
+				return err
+			}
+
 			id, err := c.client.CreateRoom(&pb.CreateRoomRequest{
-				Name:  roomName,
-				Topic: roomTopic,
+				Name:  name,
+				Topic: topic,
 			})
 			if err != nil {
 				return err
@@ -32,8 +40,8 @@ func (c *Command) CreateRoom() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVarP(&roomName, "name", "n", "", "Room name")
-	cmd.Flags().StringVarP(&roomTopic, "topic", "t", "", "Room topic")
+	cmd.Flags().String("name", "", "Room name")
+	cmd.Flags().String("topic", "", "Room Topic")
 
 	return cmd
 }
