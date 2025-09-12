@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/charmingruby/clowork/api/proto/pb"
+	"github.com/charmingruby/clowork/internal/chat/delivery/cli"
 	"github.com/spf13/cobra"
 )
 
@@ -23,23 +24,23 @@ func (c *Command) ListRooms() *cobra.Command {
 				return err
 			}
 
-			list(func() {
+			cli.List(func() {
 				for idx, r := range rooms {
-					print(
+					cli.Print(
 						fmt.Sprintf("%d. [%s] %s", idx+1, r.GetTopic(), r.GetName()),
 						1,
 						true,
-						ResultSymbol,
+						cli.ResultSymbol,
 					)
 
-					print(
+					cli.Print(
 						fmt.Sprintf("ID: %s", r.GetId()),
 						2,
 						true,
-						ResultSymbol,
+						cli.ResultSymbol,
 					)
 
-					maybeSeparate(idx, len(rooms))
+					cli.MaybeSeparate(idx, len(rooms))
 				}
 			})
 

@@ -3,7 +3,6 @@ package command
 import (
 	"bufio"
 	"context"
-	"fmt"
 	"os"
 	"strings"
 
@@ -42,7 +41,6 @@ func (c *Command) JoinRoom() *cobra.Command {
 			go c.client.ListenToServerEvents()
 
 			scanner := bufio.NewScanner(os.Stdin)
-			fmt.Println("💬 Digite suas mensagens (CTRL+C para sair):")
 			for {
 				select {
 				case <-ctx.Done():

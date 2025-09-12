@@ -34,7 +34,9 @@ func New(in Input) error {
 
 	uc := usecase.New(roomMemberRepo, roomRepo, messageRepo)
 
-	server.New(in.Log, in.Server, uc).Register()
+	unarySrv, streamSrv := server.New(in.Log, in.Server, uc)
+	unarySrv.Register()
+	streamSrv.Register()
 
 	return nil
 }

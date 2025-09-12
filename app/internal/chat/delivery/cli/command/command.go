@@ -1,19 +1,35 @@
 package command
 
 import (
-	"github.com/charmingruby/clowork/internal/chat/delivery/grpc/client"
+	"github.com/charmingruby/clowork/internal/chat/delivery/grpc/client/stream"
+	"github.com/charmingruby/clowork/internal/chat/delivery/grpc/client/unary"
 	"github.com/spf13/cobra"
 )
 
+type unaryClient = unary.Client
+type streamClient = stream.Client
+
+type Client struct {
+	*unaryClient
+	*streamClient
+}
+
 type Command struct {
-	client *client.Client
+	client *Client
 	cmd    *cobra.Command
 }
 
-func New(cmd *cobra.Command, client *client.Client) *Command {
+func New(
+	cmd *cobra.Command,
+	unaryCl *unary.Client,
+	streamCl *stream.Client,
+) *Command {
 	return &Command{
-		client: client,
-		cmd:    cmd,
+		client: &Client{
+			unaryClient:  unaryCl,
+			streamClient: streamCl,
+		},
+		cmd: cmd,
 	}
 }
 

@@ -1,11 +1,11 @@
-package server
+package unary
 
 import (
 	"context"
 	"errors"
 
 	"github.com/charmingruby/clowork/api/proto/pb"
-	"github.com/charmingruby/clowork/internal/chat/delivery/grpc/mapper"
+	"github.com/charmingruby/clowork/internal/chat/delivery/grpc/shared/mapper"
 	"github.com/charmingruby/clowork/internal/chat/usecase"
 	"github.com/charmingruby/clowork/pkg/core"
 	"google.golang.org/grpc/codes"

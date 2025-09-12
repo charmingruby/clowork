@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/charmingruby/clowork/api/proto/pb"
+	"github.com/charmingruby/clowork/internal/chat/delivery/cli"
 	"github.com/spf13/cobra"
 )
 
@@ -29,11 +30,11 @@ func (c *Command) CreateRoom() *cobra.Command {
 				return err
 			}
 
-			print(
+			cli.Print(
 				fmt.Sprintf("Room created successfully; id: %s", id),
 				1,
 				true,
-				ResultSymbol,
+				cli.ResultSymbol,
 			)
 
 			return nil

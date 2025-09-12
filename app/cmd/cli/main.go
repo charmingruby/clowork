@@ -1,10 +1,10 @@
 package main
 
 import (
-	"context"
 	"os"
 
-	"github.com/charmingruby/clowork/internal/chat/delivery/command"
+	"github.com/charmingruby/clowork/internal/chat/delivery/cli"
+	"github.com/charmingruby/clowork/internal/chat/delivery/cli/command"
 	"github.com/charmingruby/clowork/internal/chat/delivery/grpc/client"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
@@ -26,20 +26,16 @@ func main() {
 	}
 	defer clientConn.Close()
 
-	client := client.New(clientConn)
-	err = client.Stream(context.Background())
-	if err != nil {
-		os.Exit(1)
-	}
+	unaryCl, streamCl := client.New(clientConn)
 
 	rootCmd := &cobra.Command{
 		Use: "Clowork",
 	}
 
-	cmdHandler := command.New(rootCmd, client)
+	cmdHandler := command.New(rootCmd, unaryCl, streamCl)
 	cmdHandler.Register()
 
 	if err := rootCmd.Execute(); err != nil {
-		command.ReportFailure(err)
+		cli.ReportFailure(err)
 	}
 }

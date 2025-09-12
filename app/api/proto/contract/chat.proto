@@ -6,22 +6,14 @@ option go_package = "github.com/charmingruby/clowork/api/proto/pb";
 
 import "google/protobuf/timestamp.proto";
 
+// Streaming Contracts
+
 service ChatStream {
     rpc Stream(stream ClientEvent) returns (stream ServerEvent);
 }
 
-service ChatAPI {
-    rpc CreateRoom(CreateRoomRequest) returns (CreateRoomReply);
-    rpc ListRooms(ListRoomsRequest) returns (ListRoomsReply);
-    rpc ListRoomMessages(ListRoomMessagesRequest) returns (ListRoomMessagesReply);
-    rpc ListRoomMembers(ListRoomMembersRequest) returns (ListRoomMembersReply);
-}
-
-// Streaming Contracts
-
 message ClientEvent {
-    string client_msg_id = 1;
-    uint64 last_event_seq = 2;
+    string id = 1;
     
     oneof event {
         JoinRoom join_room = 3;
@@ -33,15 +25,14 @@ message ClientEvent {
 }
 
 message ServerEvent {
-    uint64 event_seq = 1;
-
+    string id = 1;
+    
     oneof event {
         RoomJoined room_joined = 2;
         RoomLeft room_left = 3;
         MessagePosted message_posted = 4;
-        PresenceUpdate presence_update = 6;
-        Ack ack = 7;
-        Heartbeat heartbeat = 8;
+        PresenceUpdate presence_update = 5;
+        Heartbeat heartbeat = 6;
     }
 }
 
@@ -92,13 +83,14 @@ message PresenceUpdate {
     repeated RoomMember members = 2;
 }
 
-message Ack {
-    string client_msg_id = 1;
-    bool success = 2;
-    string error = 3;
-}
+// Unary Contracts
 
-// Non-Streaming Contracts
+service ChatAPI {
+    rpc CreateRoom(CreateRoomRequest) returns (CreateRoomReply);
+    rpc ListRooms(ListRoomsRequest) returns (ListRoomsReply);
+    rpc ListRoomMessages(ListRoomMessagesRequest) returns (ListRoomMessagesReply);
+    rpc ListRoomMembers(ListRoomMembersRequest) returns (ListRoomMembersReply);
+}
 
 message CreateRoomRequest {
     string name = 1;

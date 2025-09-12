@@ -1,4 +1,4 @@
-package command
+package cli
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ const (
 	FailureSymbol       Symbol = "⚠️"
 )
 
-func print(msg string, ident int, breakline bool, symbol Symbol) {
+func Print(msg string, ident int, breakline bool, symbol Symbol) {
 	var identation string
 
 	if ident == 0 {
@@ -40,7 +40,7 @@ func print(msg string, ident int, breakline bool, symbol Symbol) {
 }
 
 func ReportFailure(err error) {
-	print(
+	Print(
 		fmt.Sprintf("Error: %s", err.Error()),
 		0,
 		true,
@@ -48,14 +48,14 @@ func ReportFailure(err error) {
 	)
 }
 
-func list(fn func()) {
-	print("", 0, true, ListTopSymbol)
+func List(fn func()) {
+	Print("", 0, true, ListTopSymbol)
 	fn()
-	print("", 0, true, ListBottomSymbol)
+	Print("", 0, true, ListBottomSymbol)
 }
 
-func maybeSeparate(currIdx, size int) {
+func MaybeSeparate(currIdx, size int) {
 	if currIdx != size-1 {
-		print("", 0, true, ListSeparatorSymbol)
+		Print("", 0, true, ListSeparatorSymbol)
 	}
 }

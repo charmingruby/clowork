@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/charmingruby/clowork/api/proto/pb"
+	"github.com/charmingruby/clowork/internal/chat/delivery/cli"
 	"github.com/spf13/cobra"
 )
 
@@ -29,13 +30,13 @@ func (c *Command) ListMessages() *cobra.Command {
 				return err
 			}
 
-			list(func() {
+			cli.List(func() {
 				for _, m := range messages {
-					print(
+					cli.Print(
 						fmt.Sprintf("%s: %s", m.GetSenderId(), m.GetContent()),
 						1,
 						true,
-						ResultSymbol,
+						cli.ResultSymbol,
 					)
 				}
 			})

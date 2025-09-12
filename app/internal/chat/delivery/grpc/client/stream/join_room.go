@@ -1,4 +1,4 @@
-package client
+package stream
 
 import (
 	"github.com/charmingruby/clowork/api/proto/pb"
@@ -7,8 +7,7 @@ import (
 
 func (c *Client) JoinRoom(roomID, nickname, hostname string) error {
 	if err := c.stream.Send(&pb.ClientEvent{
-		ClientMsgId:  core.NewID(),
-		LastEventSeq: uint64(c.session.lastEventSeq),
+		Id: core.NewID(),
 		Event: &pb.ClientEvent_JoinRoom{
 			JoinRoom: &pb.JoinRoom{
 				RoomId:   roomID,

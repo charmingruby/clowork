@@ -1,4 +1,4 @@
-package client
+package stream
 
 import (
 	"context"
@@ -46,7 +46,7 @@ func (c *Client) Stream(ctx context.Context) error {
 		defer stream.CloseSend()
 
 		err := stream.Send(&pb.ClientEvent{
-			ClientMsgId: "msg-1",
+			Id: "msg-1",
 			Event: &pb.ClientEvent_JoinRoom{
 				JoinRoom: &pb.JoinRoom{RoomId: "room-123"},
 			},
