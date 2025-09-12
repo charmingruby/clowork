@@ -9,7 +9,6 @@ type session struct {
 	nickname      string
 	hostname      string
 	currentRoomID string
-	lastEventSeq  int
 }
 
 type Client struct {
@@ -17,19 +16,20 @@ type Client struct {
 
 	stream  grpc.BidiStreamingClient[pb.ClientEvent, pb.ServerEvent]
 	session *session
+	console chan string
 }
 
-func New(conn *grpc.ClientConn) *Client {
+func New(conn *grpc.ClientConn, console chan string) *Client {
 	streamClient := pb.NewChatStreamClient(conn)
 
 	return &Client{
 		streamClient: streamClient,
 		stream:       nil,
+		console:      console,
 		session: &session{
 			nickname:      "",
 			hostname:      "",
 			currentRoomID: "",
-			lastEventSeq:  0,
 		},
 	}
 }

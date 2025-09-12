@@ -1,11 +1,10 @@
 package command
 
 import (
-	"bufio"
 	"context"
 	"os"
-	"strings"
 
+	"github.com/charmingruby/clowork/internal/chat/delivery/cli"
 	"github.com/spf13/cobra"
 )
 
@@ -40,20 +39,9 @@ func (c *Command) JoinRoom() *cobra.Command {
 
 			go c.client.ListenToServerEvents()
 
-			scanner := bufio.NewScanner(os.Stdin)
 			for {
-				select {
-				case <-ctx.Done():
-					// if err := c.client.LeaveRoom(ctx); err != nil { }
-					return nil
-				default:
-					if scanner.Scan() {
-						text := strings.TrimSpace(scanner.Text())
-						if text == "" {
-							continue
-						}
-					}
-				}
+				msg := <-c.client.console
+				cli.Print(msg, 1, true, cli.ResultSymbol)
 			}
 		},
 	}

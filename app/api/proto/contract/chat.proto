@@ -13,7 +13,8 @@ service ChatStream {
 }
 
 message ClientEvent {
-    string id = 1;
+    string client_msg_id = 1;
+    uint64 last_event_seq = 2;    
     
     oneof event {
         JoinRoom join_room = 3;
@@ -25,7 +26,7 @@ message ClientEvent {
 }
 
 message ServerEvent {
-    string id = 1;
+    uint64 event_seq = 1;
     
     oneof event {
         RoomJoined room_joined = 2;
@@ -33,6 +34,8 @@ message ServerEvent {
         MessagePosted message_posted = 4;
         PresenceUpdate presence_update = 5;
         Heartbeat heartbeat = 6;
+        Ack ack = 7;
+
     }
 }
 
@@ -45,6 +48,12 @@ message JoinRoom {
 message LeaveRoom {
     string room_id = 1;
     string member_id = 2;
+}
+
+message Ack {
+    string client_msg_id = 1;
+    bool success = 2;
+    string error = 3;
 }
 
 message SendMessage {

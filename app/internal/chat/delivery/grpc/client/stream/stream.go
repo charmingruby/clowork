@@ -2,8 +2,9 @@ package stream
 
 import (
 	"context"
-	"fmt"
 	"io"
+
+	"github.com/charmingruby/clowork/api/proto/pb"
 )
 
 func (c *Client) ConnectStream(ctx context.Context) error {
@@ -19,7 +20,8 @@ func (c *Client) ConnectStream(ctx context.Context) error {
 
 func (c *Client) ListenToServerEvents() error {
 	for {
-		in, err := c.stream.Recv()
+		sevt, err := c.stream.Recv()
+
 		if err == io.EOF {
 			break
 		}
@@ -28,31 +30,13 @@ func (c *Client) ListenToServerEvents() error {
 			return err
 		}
 
-		fmt.Printf("%s \n", in.GetEvent())
+		switch evt := sevt.Event.(type) {
+		case *pb.ServerEvent_RoomJoined:
+			c.handleJoinedRoom(evt)
+		default:
+			c.console <- "p"
+		}
 	}
 
 	return nil
 }
-
-// func (c *Client) Stream(ctx context.Context) error {
-// 	stream, err := c.streamClient.Stream(ctx)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	go func() {
-// 		defer stream.CloseSend()
-
-// 		err := stream.Send(&pb.ClientEvent{
-// 			Id: "msg-1",
-// 			Event: &pb.ClientEvent_JoinRoom{
-// 				JoinRoom: &pb.JoinRoom{RoomId: "room-123"},
-// 			},
-// 		})
-// 		if err != nil {
-// 			return
-// 		}
-// 	}()
-
-// 	return nil
-// }

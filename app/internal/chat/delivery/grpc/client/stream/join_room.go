@@ -7,7 +7,8 @@ import (
 
 func (c *Client) JoinRoom(roomID, nickname, hostname string) error {
 	if err := c.stream.Send(&pb.ClientEvent{
-		Id: core.NewID(),
+		ClientMsgId:  core.NewID(),
+		LastEventSeq: 0,
 		Event: &pb.ClientEvent_JoinRoom{
 			JoinRoom: &pb.JoinRoom{
 				RoomId:   roomID,

@@ -5,10 +5,14 @@ import (
 
 	"github.com/charmingruby/clowork/api/proto/pb"
 	"github.com/charmingruby/clowork/internal/chat/usecase"
-	"github.com/charmingruby/clowork/pkg/core"
+	"google.golang.org/grpc"
 )
 
-func (s *Server) handleJoinRoom(ctx context.Context, evt *pb.ClientEvent_JoinRoom) error {
+func (s *Server) handleJoinRoom(
+	ctx context.Context,
+	stream grpc.BidiStreamingServer[pb.ClientEvent, pb.ServerEvent],
+	evt *pb.ClientEvent_JoinRoom,
+) error {
 	joinRoom := evt.JoinRoom
 
 	if _, isRoomRegistered := s.rooms[joinRoom.RoomId]; !isRoomRegistered {
@@ -28,12 +32,15 @@ func (s *Server) handleJoinRoom(ctx context.Context, evt *pb.ClientEvent_JoinRoo
 		return err
 	}
 
-	sess := &session{}
+	sess := &session{
+		memberID: memberID,
+		stream:   stream,
+	}
 
 	s.rooms[joinRoom.RoomId][memberID] = sess
 
-	return s.stream.Send(&pb.ServerEvent{
-		Id: core.NewID(),
+	return stream.Send(&pb.ServerEvent{
+		EventSeq: 0,
 		Event: &pb.ServerEvent_RoomJoined{
 			RoomJoined: &pb.RoomJoined{
 				RoomId:   joinRoom.RoomId,

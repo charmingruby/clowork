@@ -12,6 +12,8 @@ type streamClient = stream.Client
 type Client struct {
 	*unaryClient
 	*streamClient
+
+	console chan string
 }
 
 type Command struct {
@@ -21,11 +23,13 @@ type Command struct {
 
 func New(
 	cmd *cobra.Command,
+	console *chan string,
 	unaryCl *unary.Client,
 	streamCl *stream.Client,
 ) *Command {
 	return &Command{
 		client: &Client{
+			console:      *console,
 			unaryClient:  unaryCl,
 			streamClient: streamCl,
 		},

@@ -6,9 +6,12 @@ import (
 	"google.golang.org/grpc"
 )
 
-func New(conn *grpc.ClientConn) (*unary.Client, *stream.Client) {
+func New(
+	conn *grpc.ClientConn,
+	console chan string,
+) (*unary.Client, *stream.Client) {
 	unaryCl := unary.New(conn)
-	streamCl := stream.New(conn)
+	streamCl := stream.New(conn, console)
 
 	return unaryCl, streamCl
 }
