@@ -31,4 +31,18 @@ func (s *Server) Stream(stream grpc.BidiStreamingServer[pb.ClientEvent, pb.Serve
 	}
 }
 
-func (s *Server) broadcastToRoom() {}
+func (s *Server) broadcastToRoom(evt *pb.ServerEvent, roomID, excludedMemberID string) {
+	if room := s.rooms[roomID]; room != nil {
+		for memberID, sess := range room {
+			if memberID != excludedMemberID {
+				if err := sess.stream.Send(evt); err != nil {
+					s.log.Error("broadcast error",
+						"room_id", room,
+						"member_id", memberID,
+						"event", evt.GetEvent(),
+					)
+				}
+			}
+		}
+	}
+}

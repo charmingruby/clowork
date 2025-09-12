@@ -39,7 +39,7 @@ func (s *Server) handleJoinRoom(
 
 	s.rooms[joinRoom.RoomId][memberID] = sess
 
-	return stream.Send(&pb.ServerEvent{
+	s.broadcastToRoom(&pb.ServerEvent{
 		EventSeq: 0,
 		Event: &pb.ServerEvent_RoomJoined{
 			RoomJoined: &pb.RoomJoined{
@@ -48,5 +48,10 @@ func (s *Server) handleJoinRoom(
 				Nickname: joinRoom.Nickname,
 			},
 		},
-	})
+	},
+		joinRoom.RoomId,
+		memberID,
+	)
+
+	return nil
 }
