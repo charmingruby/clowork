@@ -88,7 +88,7 @@ func (r *RoomMemberRepo) FindByIDInRoom(ctx context.Context, memberID, roomID st
 
 	var rm model.RoomMember
 
-	if err := stmt.QueryRowContext(ctx, rm.RoomID, rm.ID).Scan(
+	if err := stmt.QueryRowContext(ctx, roomID, memberID).Scan(
 		&rm.ID,
 		&rm.Nickname,
 		&rm.Hostname,
