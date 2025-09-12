@@ -9,7 +9,6 @@ import (
 
 type Server struct {
 	pb.UnimplementedChatAPIServer
-	pb.UnimplementedChatStreamServer
 
 	log     *logger.Logger
 	server  *grpc.Server
@@ -25,6 +24,5 @@ func New(log *logger.Logger, srv *grpc.Server, usecase usecase.Service) *Server 
 }
 
 func (s *Server) Register() {
-	pb.RegisterChatStreamServer(s.server, s)
 	pb.RegisterChatAPIServer(s.server, s)
 }

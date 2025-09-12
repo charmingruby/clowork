@@ -12,9 +12,9 @@ func roomMemberQueries() map[string]string {
 	return map[string]string{
 		createRoomMember: `
 		INSERT INTO room_members 
-			(id, nickname, hostname, room_id, created_at)
+			(id, nickname, hostname, room_id, status, created_at)
 		VALUES 
-			($1, $2, $3, $4, $5)`,
+			($1, $2, $3, $4, $5, $6)`,
 		listMembersByRoomID: `
 		SELECT * FROM room_members
 		WHERE room_id = $1

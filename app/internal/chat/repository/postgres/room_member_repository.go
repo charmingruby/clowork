@@ -63,6 +63,7 @@ func (r *RoomMemberRepo) ExistsInRoom(ctx context.Context, roomID, nickname, hos
 		&rm.Nickname,
 		&rm.Hostname,
 		&rm.RoomID,
+		&rm.Status,
 		&rm.CreatedAt,
 		&rm.UpdatedAt,
 	); err != nil {
@@ -92,6 +93,7 @@ func (r *RoomMemberRepo) FindByIDInRoom(ctx context.Context, memberID, roomID st
 		&rm.Nickname,
 		&rm.Hostname,
 		&rm.RoomID,
+		&rm.Status,
 		&rm.CreatedAt,
 		&rm.UpdatedAt,
 	); err != nil {
@@ -119,6 +121,7 @@ func (r *RoomMemberRepo) Create(ctx context.Context, rm model.RoomMember) error 
 		rm.Nickname,
 		rm.Hostname,
 		rm.RoomID,
+		rm.Status,
 		rm.CreatedAt,
 	)
 
