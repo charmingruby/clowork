@@ -1,8 +1,10 @@
 package command
 
 import (
+	"bufio"
 	"context"
 	"os"
+	"strings"
 
 	"github.com/charmingruby/clowork/internal/chat/delivery/cli"
 	"github.com/spf13/cobra"
@@ -39,9 +41,36 @@ func (c *Command) JoinRoom() *cobra.Command {
 
 			go c.client.ListenToServerEvents()
 
+			cmdCh := make(chan string)
+
+			go func() {
+				scanner := bufio.NewScanner(os.Stdin)
+				for scanner.Scan() {
+					cmdCh <- strings.TrimSpace(scanner.Text())
+				}
+			}()
+
 			for {
-				msg := <-c.client.msgCh
-				cli.Print(msg, 1, true, cli.ResultSymbol)
+				select {
+				case msg := <-c.client.msgCh:
+					cli.Print(msg, 1, true, cli.ResultSymbol)
+				case cmdLine := <-cmdCh:
+					parts := strings.Fields(cmdLine)
+					if len(parts) == 0 {
+						continue
+					}
+
+					switch parts[0] {
+					case "quit":
+						// if err := c.client.LeaveRoom(ctx); err != nil { }
+						return nil
+					case "msg":
+						// content := strings.Join(parts[1:], " ")
+						// if err := c.client.SendMessage(ctx, content); err != nil { }
+					default:
+						cli.Print("Unknowwn command", 1, true, cli.FailureSymbol)
+					}
+				}
 			}
 		},
 	}
