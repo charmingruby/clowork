@@ -45,7 +45,7 @@ func (c *Command) ListMessages() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String("room", "", "Room ID")
+	cmd.Flags().String("room", "", "Room")
 	cmd.Flags().Int("page", 0, "Page")
 
 	return cmd

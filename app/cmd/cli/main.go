@@ -38,6 +38,6 @@ func main() {
 	cmdHandler.Register()
 
 	if err := rootCmd.Execute(); err != nil {
-		cli.ReportFailure(err)
+		cli.ReportCommandFailure(err)
 	}
 }

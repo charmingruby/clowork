@@ -39,15 +39,6 @@ func Print(msg string, ident int, breakline bool, symbol Symbol) {
 	fmt.Printf("%s %s", identation, msg)
 }
 
-func ReportFailure(err error) {
-	Print(
-		fmt.Sprintf("Error: %s", err.Error()),
-		0,
-		true,
-		FailureSymbol,
-	)
-}
-
 func List(fn func()) {
 	Print("", 0, true, ListTopSymbol)
 	fn()
@@ -58,4 +49,25 @@ func MaybeSeparate(currIdx, size int) {
 	if currIdx != size-1 {
 		Print("", 0, true, ListSeparatorSymbol)
 	}
+}
+
+func Cursor() {
+	print("> ")
+}
+
+func ReportCommandFailure(err error) {
+	Print(
+		fmt.Sprintf("Error: %s", err.Error()),
+		0,
+		true,
+		FailureSymbol,
+	)
+}
+
+func PreserveTyping() {
+	fmt.Print("\r\033[K")
+}
+
+func Clear() {
+	fmt.Print("\033[2J\033[H")
 }

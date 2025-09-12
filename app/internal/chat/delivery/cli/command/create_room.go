@@ -41,8 +41,8 @@ func (c *Command) CreateRoom() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String("name", "", "Room name")
-	cmd.Flags().String("topic", "", "Room Topic")
+	cmd.Flags().String("name", "", "Name")
+	cmd.Flags().String("topic", "", "Topic")
 
 	return cmd
 }
