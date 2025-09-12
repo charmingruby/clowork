@@ -16,16 +16,16 @@ type Client struct {
 
 	stream  grpc.BidiStreamingClient[pb.ClientEvent, pb.ServerEvent]
 	session *session
-	console chan string
+	msgCh   chan string
 }
 
-func New(conn *grpc.ClientConn, console chan string) *Client {
+func New(conn *grpc.ClientConn, msgCh chan string) *Client {
 	streamClient := pb.NewChatStreamClient(conn)
 
 	return &Client{
 		streamClient: streamClient,
 		stream:       nil,
-		console:      console,
+		msgCh:        msgCh,
 		session: &session{
 			nickname:      "",
 			hostname:      "",

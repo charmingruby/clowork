@@ -40,7 +40,7 @@ func (c *Command) JoinRoom() *cobra.Command {
 			go c.client.ListenToServerEvents()
 
 			for {
-				msg := <-c.client.console
+				msg := <-c.client.msgCh
 				cli.Print(msg, 1, true, cli.ResultSymbol)
 			}
 		},

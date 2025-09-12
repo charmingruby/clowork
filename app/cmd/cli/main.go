@@ -26,15 +26,15 @@ func main() {
 	}
 	defer clientConn.Close()
 
-	console := make(chan string, 10)
+	msgCh := make(chan string, 10)
 
-	unaryCl, streamCl := client.New(clientConn, console)
+	unaryCl, streamCl := client.New(clientConn, msgCh)
 
 	rootCmd := &cobra.Command{
 		Use: "Clowork",
 	}
 
-	cmdHandler := command.New(rootCmd, &console, unaryCl, streamCl)
+	cmdHandler := command.New(rootCmd, msgCh, unaryCl, streamCl)
 	cmdHandler.Register()
 
 	if err := rootCmd.Execute(); err != nil {
