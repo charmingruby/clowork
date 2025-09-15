@@ -79,7 +79,7 @@ message RoomJoined {
 
 message RoomLeft {
     string room_id = 1;
-    string member_id = 2;
+    string nickname = 2; 
 }
 
 message MessagePosted {

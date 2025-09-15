@@ -9,9 +9,9 @@ type Symbol string
 const (
 	InputSymbol         Symbol = ">"
 	ResultSymbol        Symbol = "~>"
-	ListTopSymbol       Symbol = ",-===-~"
-	ListSeparatorSymbol Symbol = "|-===-~"
-	ListBottomSymbol    Symbol = "'-===-~"
+	ListTopSymbol       Symbol = ",----------~"
+	ListSeparatorSymbol Symbol = "|----------~"
+	ListBottomSymbol    Symbol = "'----------~"
 	FailureSymbol       Symbol = "⚠️"
 )
 

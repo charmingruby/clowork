@@ -37,11 +37,14 @@ func (c *Command) JoinRoom() *cobra.Command {
 
 			go c.client.ListenToServerEvents()
 
-			if err := c.client.JoinRoom(roomID, nickname, hostname); err != nil {
-				return err
-			}
+			go func() error {
+				if err := c.client.JoinRoom(roomID, nickname, hostname); err != nil {
+					return err
+				}
 
-			history := []string{}
+				return nil
+			}()
+
 			cmdCh := make(chan string)
 
 			go func() {
@@ -65,44 +68,17 @@ func (c *Command) JoinRoom() *cobra.Command {
 
 					cli.Print(msg, 1, true, cli.ResultSymbol)
 
-					history = append(history, msg)
-					if len(history) > 50 {
-						history = history[1:]
-					}
-
 					cli.Cursor()
 
 				case input := <-cmdCh:
 					switch input {
 					case "quit", "q":
-						return nil
-					case "history", "h":
-						cli.List(func() {
-							start := max(len(history)-10, 0)
+						return c.client.LeaveRoom()
 
-							for i := start; i < len(history); i++ {
-								if i == len(history)-1 {
-									cli.Print(
-										history[i],
-										1,
-										false,
-										cli.ResultSymbol,
-									)
-								}
-
-								cli.Print(
-									history[i],
-									1,
-									true,
-									cli.ResultSymbol,
-								)
-							}
-						})
-
-						cli.Cursor()
 					case "clear", "c":
 						cli.Clear()
 						cli.Cursor()
+
 					default:
 						// send msg
 						cli.Cursor()

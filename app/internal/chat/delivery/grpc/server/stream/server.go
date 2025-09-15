@@ -18,6 +18,7 @@ type Server struct {
 
 type session struct {
 	memberID string
+	nickname string
 	stream   grpc.BidiStreamingServer[pb.ClientEvent, pb.ServerEvent]
 }
 

@@ -6,6 +6,8 @@ import (
 )
 
 func (c *Client) JoinRoom(roomID, nickname, hostname string) error {
+	c.joinedCh = make(chan struct{}, 1)
+
 	if err := c.stream.Send(&pb.ClientEvent{
 		ClientMsgId:  core.NewID(),
 		LastEventSeq: 0,
@@ -23,6 +25,8 @@ func (c *Client) JoinRoom(roomID, nickname, hostname string) error {
 	c.session.currentRoomID = roomID
 	c.session.hostname = hostname
 	c.session.nickname = nickname
+
+	<-c.joinedCh
 
 	return nil
 }

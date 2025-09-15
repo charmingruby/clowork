@@ -9,14 +9,16 @@ type session struct {
 	nickname      string
 	hostname      string
 	currentRoomID string
+	memberID      string
 }
 
 type Client struct {
 	streamClient pb.ChatStreamClient
 
-	stream  grpc.BidiStreamingClient[pb.ClientEvent, pb.ServerEvent]
-	session *session
-	msgCh   chan string
+	stream   grpc.BidiStreamingClient[pb.ClientEvent, pb.ServerEvent]
+	session  *session
+	msgCh    chan string
+	joinedCh chan struct{}
 }
 
 func New(conn *grpc.ClientConn, msgCh chan string) *Client {
@@ -30,6 +32,7 @@ func New(conn *grpc.ClientConn, msgCh chan string) *Client {
 			nickname:      "",
 			hostname:      "",
 			currentRoomID: "",
+			memberID:      "",
 		},
 	}
 }

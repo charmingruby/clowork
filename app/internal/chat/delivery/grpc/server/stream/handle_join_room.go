@@ -34,10 +34,24 @@ func (s *Server) handleJoinRoom(
 
 	sess := &session{
 		memberID: memberID,
+		nickname: joinRoom.GetNickname(),
 		stream:   stream,
 	}
 
 	s.rooms[joinRoom.RoomId][memberID] = sess
+
+	if err := sess.stream.Send(&pb.ServerEvent{
+		EventSeq: 0,
+		Event: &pb.ServerEvent_RoomJoined{
+			RoomJoined: &pb.RoomJoined{
+				RoomId:   joinRoom.RoomId,
+				MemberId: memberID,
+				Nickname: joinRoom.Nickname,
+			},
+		},
+	}); err != nil {
+		return err
+	}
 
 	s.broadcastToRoom(&pb.ServerEvent{
 		EventSeq: 0,

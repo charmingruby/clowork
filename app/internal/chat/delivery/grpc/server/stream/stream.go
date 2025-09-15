@@ -1,6 +1,7 @@
 package stream
 
 import (
+	"context"
 	"io"
 
 	"github.com/charmingruby/clowork/api/proto/pb"
@@ -8,7 +9,7 @@ import (
 )
 
 func (s *Server) Stream(stream grpc.BidiStreamingServer[pb.ClientEvent, pb.ServerEvent]) error {
-	ctx := stream.Context()
+	ctx := context.Background()
 
 	for {
 		cevt, err := stream.Recv()
@@ -27,16 +28,24 @@ func (s *Server) Stream(stream grpc.BidiStreamingServer[pb.ClientEvent, pb.Serve
 				s.log.Error("handle join room error", "error", err.Error())
 				continue
 			}
+		case *pb.ClientEvent_LeaveRoom:
+			if err := s.handleLeaveRoom(ctx, evt); err != nil {
+				s.log.Error("handle leave room error", "error", err.Error())
+				continue
+			}
 		}
 	}
 }
 
 func (s *Server) broadcastToRoom(evt *pb.ServerEvent, roomID, excludedMemberID string) {
+	hasExclusion := excludedMemberID != ""
+
 	if room := s.rooms[roomID]; room != nil {
 		for memberID, sess := range room {
-			if memberID != excludedMemberID {
+			if !hasExclusion || (hasExclusion && memberID != excludedMemberID) {
 				if err := sess.stream.Send(evt); err != nil {
 					s.log.Error("broadcast error",
+						"error", err.Error(),
 						"room_id", room,
 						"member_id", memberID,
 						"event", evt.GetEvent(),

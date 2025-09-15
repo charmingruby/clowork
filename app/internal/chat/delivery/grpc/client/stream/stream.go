@@ -32,7 +32,9 @@ func (c *Client) ListenToServerEvents() error {
 
 		switch evt := sevt.Event.(type) {
 		case *pb.ServerEvent_RoomJoined:
-			c.handleJoinedRoom(evt)
+			c.handleRoomJoined(evt)
+		case *pb.ServerEvent_RoomLeft:
+			c.handleRoomLeft(evt)
 		}
 	}
 
