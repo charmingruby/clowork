@@ -7,9 +7,7 @@ import (
 )
 
 func (c *Client) handleMessagePosted(evt *pb.ServerEvent_MessagePosted) {
-	messagePosted := evt.MessagePosted
+	payload := evt.MessagePosted
 
-	msg := fmt.Sprintf("%s: %s", messagePosted.SenderNickname, messagePosted.Content)
-
-	c.msgCh <- msg
+	c.msgCh <- fmt.Sprintf("%s: %s", payload.GetSenderNickname(), payload.GetContent())
 }

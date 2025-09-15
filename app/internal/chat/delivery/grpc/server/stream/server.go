@@ -12,14 +12,14 @@ type Server struct {
 
 	log     *logger.Logger
 	server  *grpc.Server
-	usecase usecase.Service
 	rooms   map[string]map[string]*session // room id -> member id -> session
+	usecase usecase.Service
 }
 
 type session struct {
+	stream   grpc.BidiStreamingServer[pb.ClientEvent, pb.ServerEvent]
 	memberID string
 	nickname string
-	stream   grpc.BidiStreamingServer[pb.ClientEvent, pb.ServerEvent]
 }
 
 func New(log *logger.Logger, srv *grpc.Server, usecase usecase.Service) *Server {

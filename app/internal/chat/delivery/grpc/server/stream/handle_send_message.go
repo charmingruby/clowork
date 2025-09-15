@@ -11,30 +11,30 @@ func (s *Server) handleSendMessage(
 	ctx context.Context,
 	evt *pb.ClientEvent_SendMessage,
 ) error {
-	sendMessage := evt.SendMessage
+	payload := evt.SendMessage
 
 	messageID, err := s.usecase.SendMessage(ctx, usecase.SendMessageInput{
-		SenderID: sendMessage.MemberId,
-		Content:  sendMessage.Content,
-		RoomID:   sendMessage.RoomId,
+		Content:  payload.GetContent(),
+		SenderID: payload.GetMemberId(),
+		RoomID:   payload.GetRoomId(),
 	})
 	if err != nil {
 		return err
 	}
 
-	sess := s.rooms[sendMessage.RoomId][sendMessage.MemberId]
+	sess := s.rooms[payload.GetRoomId()][payload.GetMemberId()]
 
-	s.broadcastToRoom(&pb.ServerEvent{
+	s.broadcast(&pb.ServerEvent{
 		EventSeq: 0,
 		Event: &pb.ServerEvent_MessagePosted{
 			MessagePosted: &pb.MessagePosted{
 				Id:             messageID,
-				Content:        sendMessage.Content,
+				Content:        payload.GetContent(),
 				SenderNickname: sess.nickname,
 			},
 		},
 	},
-		sendMessage.RoomId,
+		payload.GetRoomId(),
 		sess.memberID,
 	)
 

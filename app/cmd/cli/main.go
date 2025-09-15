@@ -24,7 +24,11 @@ func main() {
 	if err != nil {
 		os.Exit(1)
 	}
-	defer clientConn.Close()
+	defer func() {
+		if err := clientConn.Close(); err != nil {
+			cli.ReportCommandFailure(err)
+		}
+	}()
 
 	msgCh := make(chan string, 10)
 

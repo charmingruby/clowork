@@ -11,32 +11,32 @@ func (s *Server) handleLeaveRoom(
 	ctx context.Context,
 	evt *pb.ClientEvent_LeaveRoom,
 ) error {
-	leaveRoom := evt.LeaveRoom
+	payload := evt.LeaveRoom
 
 	err := s.usecase.LeaveRoom(ctx, usecase.LeaveRoomInput{
-		MemberID: leaveRoom.GetMemberId(),
-		RoomID:   leaveRoom.GetRoomId(),
+		MemberID: payload.GetMemberId(),
+		RoomID:   payload.GetRoomId(),
 	})
 	if err != nil {
 		return err
 	}
 
-	sess := s.rooms[leaveRoom.RoomId][leaveRoom.MemberId]
+	sess := s.rooms[payload.GetRoomId()][payload.GetMemberId()]
 
-	s.broadcastToRoom(&pb.ServerEvent{
+	s.broadcast(&pb.ServerEvent{
 		EventSeq: 0,
 		Event: &pb.ServerEvent_RoomLeft{
 			RoomLeft: &pb.RoomLeft{
-				RoomId:   leaveRoom.GetRoomId(),
+				RoomId:   payload.GetRoomId(),
 				Nickname: sess.nickname,
 			},
 		},
 	},
-		leaveRoom.GetRoomId(),
-		leaveRoom.GetMemberId(),
+		payload.GetRoomId(),
+		payload.GetMemberId(),
 	)
 
-	delete(s.rooms[leaveRoom.RoomId], leaveRoom.MemberId)
+	delete(s.rooms[payload.GetRoomId()], payload.GetMemberId())
 
 	return nil
 }

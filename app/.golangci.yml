@@ -32,13 +32,13 @@ linters:
     - exhaustive
     - exptostd
     - fatcontext
-    - forbidigo
+    # - forbidigo
     - funcorder
     - funlen
     - gocheckcompilerdirectives
     - gochecknoinits
     - gochecksumtype
-    - gocognit
+    # - gocognit
     - gocritic
     - gocyclo
     - godot

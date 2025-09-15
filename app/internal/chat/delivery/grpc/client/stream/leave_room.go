@@ -6,7 +6,7 @@ import (
 )
 
 func (c *Client) LeaveRoom() error {
-	if err := c.stream.Send(&pb.ClientEvent{
+	return c.stream.Send(&pb.ClientEvent{
 		ClientMsgId:  core.NewID(),
 		LastEventSeq: 0,
 		Event: &pb.ClientEvent_LeaveRoom{
@@ -15,9 +15,5 @@ func (c *Client) LeaveRoom() error {
 				MemberId: c.session.memberID,
 			},
 		},
-	}); err != nil {
-		return err
-	}
-
-	return nil
+	})
 }

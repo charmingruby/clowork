@@ -13,20 +13,20 @@ func (s *Server) handleJoinRoom(
 	stream grpc.BidiStreamingServer[pb.ClientEvent, pb.ServerEvent],
 	evt *pb.ClientEvent_JoinRoom,
 ) error {
-	joinRoom := evt.JoinRoom
+	payload := evt.JoinRoom
 
-	if _, isRoomRegistered := s.rooms[joinRoom.RoomId]; !isRoomRegistered {
-		s.rooms[joinRoom.RoomId] = map[string]*session{}
+	if _, isRoomRegistered := s.rooms[payload.GetRoomId()]; !isRoomRegistered {
+		s.rooms[payload.GetRoomId()] = map[string]*session{}
 	}
 
-	if s.rooms[joinRoom.RoomId] == nil {
-		s.rooms[joinRoom.RoomId] = make(map[string]*session)
+	if s.rooms[payload.GetRoomId()] == nil {
+		s.rooms[payload.GetRoomId()] = make(map[string]*session)
 	}
 
 	memberID, err := s.usecase.JoinRoom(ctx, usecase.JoinRoomInput{
-		Nickname: joinRoom.Nickname,
-		Hostname: joinRoom.Hostname,
-		RoomID:   joinRoom.RoomId,
+		Nickname: payload.GetNickname(),
+		Hostname: payload.GetHostname(),
+		RoomID:   payload.GetRoomId(),
 	})
 	if err != nil {
 		return err
@@ -34,36 +34,36 @@ func (s *Server) handleJoinRoom(
 
 	sess := &session{
 		memberID: memberID,
-		nickname: joinRoom.GetNickname(),
+		nickname: payload.GetNickname(),
 		stream:   stream,
 	}
 
-	s.rooms[joinRoom.RoomId][memberID] = sess
+	s.rooms[payload.GetRoomId()][memberID] = sess
 
 	if err := sess.stream.Send(&pb.ServerEvent{
 		EventSeq: 0,
 		Event: &pb.ServerEvent_RoomJoined{
 			RoomJoined: &pb.RoomJoined{
-				RoomId:   joinRoom.RoomId,
+				RoomId:   payload.GetRoomId(),
 				MemberId: memberID,
-				Nickname: joinRoom.Nickname,
+				Nickname: payload.GetNickname(),
 			},
 		},
 	}); err != nil {
 		return err
 	}
 
-	s.broadcastToRoom(&pb.ServerEvent{
+	s.broadcast(&pb.ServerEvent{
 		EventSeq: 0,
 		Event: &pb.ServerEvent_RoomJoined{
 			RoomJoined: &pb.RoomJoined{
-				RoomId:   joinRoom.RoomId,
+				RoomId:   payload.GetRoomId(),
 				MemberId: memberID,
-				Nickname: joinRoom.Nickname,
+				Nickname: payload.GetNickname(),
 			},
 		},
 	},
-		joinRoom.RoomId,
+		payload.GetRoomId(),
 		memberID,
 	)
 

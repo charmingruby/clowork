@@ -54,16 +54,9 @@ func (c *Command) Register() {
 		c.CreateRoom(),
 	)
 
-	chatWrapper := &cobra.Command{
-		Use: "chat",
-	}
-	chatWrapper.AddCommand(
-		c.JoinRoom(),
-	)
-
 	c.cmd.AddCommand(
 		listWrapper,
 		createWrapper,
-		chatWrapper,
+		c.Chat(),
 	)
 }

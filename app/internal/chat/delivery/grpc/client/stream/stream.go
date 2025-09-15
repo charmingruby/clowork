@@ -2,6 +2,7 @@ package stream
 
 import (
 	"context"
+	"errors"
 	"io"
 
 	"github.com/charmingruby/clowork/api/proto/pb"
@@ -18,11 +19,11 @@ func (c *Client) ConnectStream(ctx context.Context) error {
 	return nil
 }
 
-func (c *Client) ListenToServerEvents() error {
+func (c *Client) Stream() error {
 	for {
 		sevt, err := c.stream.Recv()
 
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			break
 		}
 
@@ -30,7 +31,7 @@ func (c *Client) ListenToServerEvents() error {
 			return err
 		}
 
-		switch evt := sevt.Event.(type) {
+		switch evt := sevt.GetEvent().(type) {
 		case *pb.ServerEvent_RoomJoined:
 			c.handleRoomJoined(evt)
 		case *pb.ServerEvent_RoomLeft:

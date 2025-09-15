@@ -7,7 +7,7 @@ import (
 )
 
 func (c *Client) handleRoomLeft(evt *pb.ServerEvent_RoomLeft) {
-	msg := fmt.Sprintf("`%s` left.", evt.RoomLeft.GetNickname())
+	payload := evt.RoomLeft
 
-	c.msgCh <- msg
+	c.msgCh <- fmt.Sprintf("`%s` left.", payload.GetNickname())
 }

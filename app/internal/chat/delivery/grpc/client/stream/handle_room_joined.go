@@ -7,10 +7,10 @@ import (
 )
 
 func (c *Client) handleRoomJoined(evt *pb.ServerEvent_RoomJoined) {
-	roomJoined := evt.RoomJoined
+	payload := evt.RoomJoined
 
-	if roomJoined.GetNickname() == c.session.nickname {
-		c.session.memberID = roomJoined.GetMemberId()
+	if payload.GetNickname() == c.session.nickname {
+		c.session.memberID = payload.GetMemberId()
 
 		if c.joinedCh != nil {
 			c.joinedCh <- struct{}{}
@@ -20,7 +20,5 @@ func (c *Client) handleRoomJoined(evt *pb.ServerEvent_RoomJoined) {
 		return
 	}
 
-	msg := fmt.Sprintf("A wild `%s` has appeared.", roomJoined.Nickname)
-
-	c.msgCh <- msg
+	c.msgCh <- fmt.Sprintf("A wild `%s` has appeared.", payload.GetNickname())
 }
