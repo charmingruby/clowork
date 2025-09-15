@@ -35,6 +35,8 @@ func (c *Client) ListenToServerEvents() error {
 			c.handleRoomJoined(evt)
 		case *pb.ServerEvent_RoomLeft:
 			c.handleRoomLeft(evt)
+		case *pb.ServerEvent_MessagePosted:
+			c.handleMessagePosted(evt)
 		}
 	}
 

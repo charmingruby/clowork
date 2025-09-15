@@ -7,12 +7,9 @@ import (
 type Symbol string
 
 const (
-	InputSymbol         Symbol = ">"
-	ResultSymbol        Symbol = "~>"
-	ListTopSymbol       Symbol = ",----------~"
-	ListSeparatorSymbol Symbol = "|----------~"
-	ListBottomSymbol    Symbol = "'----------~"
-	FailureSymbol       Symbol = "⚠️"
+	InputSymbol   Symbol = ">"
+	ResultSymbol  Symbol = "~>"
+	FailureSymbol Symbol = "⚠️"
 )
 
 func Print(msg string, ident int, breakline bool, symbol Symbol) {
@@ -37,18 +34,6 @@ func Print(msg string, ident int, breakline bool, symbol Symbol) {
 	}
 
 	fmt.Printf("%s %s", identation, msg)
-}
-
-func List(fn func()) {
-	Print("", 0, true, ListTopSymbol)
-	fn()
-	Print("", 0, true, ListBottomSymbol)
-}
-
-func MaybeSeparate(currIdx, size int) {
-	if currIdx != size-1 {
-		Print("", 0, true, ListSeparatorSymbol)
-	}
 }
 
 func Cursor() {

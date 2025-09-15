@@ -30,16 +30,14 @@ func (c *Command) ListMessages() *cobra.Command {
 				return err
 			}
 
-			cli.List(func() {
-				for _, m := range messages {
-					cli.Print(
-						fmt.Sprintf("%s: %s", m.GetSenderId(), m.GetContent()),
-						1,
-						true,
-						cli.ResultSymbol,
-					)
-				}
-			})
+			for _, m := range messages {
+				cli.Print(
+					fmt.Sprintf("[%s] %s", m.GetSenderId(), m.GetContent()),
+					0,
+					true,
+					cli.ResultSymbol,
+				)
+			}
 
 			return nil
 		},

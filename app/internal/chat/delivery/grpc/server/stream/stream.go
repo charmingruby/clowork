@@ -33,6 +33,11 @@ func (s *Server) Stream(stream grpc.BidiStreamingServer[pb.ClientEvent, pb.Serve
 				s.log.Error("handle leave room error", "error", err.Error())
 				continue
 			}
+		case *pb.ClientEvent_SendMessage:
+			if err := s.handleSendMessage(ctx, evt); err != nil {
+				s.log.Error("handle send message error", "error", err.Error())
+				continue
+			}
 		}
 	}
 }

@@ -80,7 +80,10 @@ func (c *Command) JoinRoom() *cobra.Command {
 						cli.Cursor()
 
 					default:
-						// send msg
+						if err := c.client.SendMessage(input); err != nil {
+							cli.Print(err.Error(), 1, true, cli.FailureSymbol)
+						}
+
 						cli.Cursor()
 					}
 

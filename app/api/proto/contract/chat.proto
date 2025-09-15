@@ -84,7 +84,8 @@ message RoomLeft {
 
 message MessagePosted {
     string id = 1;
-    Message message = 2;
+    string content = 2;
+    string sender_nickname = 3;
 }
 
 message PresenceUpdate {
