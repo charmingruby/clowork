@@ -1,6 +1,8 @@
 package stream
 
 import (
+	"time"
+
 	"github.com/charmingruby/clowork/api/proto/pb"
 	"github.com/charmingruby/clowork/internal/chat/usecase"
 	"github.com/charmingruby/clowork/pkg/telemetry/logger"
@@ -21,6 +23,7 @@ type session struct {
 	memberID string
 	nickname string
 	hostname string
+	lastBeat time.Time
 }
 
 func New(log *logger.Logger, srv *grpc.Server, usecase usecase.Service) *Server {
@@ -34,4 +37,7 @@ func New(log *logger.Logger, srv *grpc.Server, usecase usecase.Service) *Server 
 
 func (s *Server) Register() {
 	pb.RegisterChatStreamServer(s.server, s)
+
+	go s.heartbeatLoop()
+	go s.monitorHeartbeats()
 }

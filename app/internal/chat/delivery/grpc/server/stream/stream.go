@@ -44,6 +44,8 @@ func (s *Server) Stream(stream grpc.BidiStreamingServer[pb.ClientEvent, pb.Serve
 				s.log.Error("handle request presence error", "error", err.Error())
 				continue
 			}
+		case *pb.ClientEvent_Heartbeat:
+			s.handleHeartbeat(evt)
 		}
 	}
 }
@@ -87,7 +89,6 @@ func (s *Server) sendTo(
 	}
 
 	sess := s.rooms[roomID][memberID]
-
 	if err := sess.stream.Send(evt); err != nil {
 		s.log.Error("broadcast error",
 			"error", err.Error(),

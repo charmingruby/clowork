@@ -40,6 +40,8 @@ func (c *Client) Stream() error {
 			c.handleMessagePosted(evt)
 		case *pb.ServerEvent_RoomPresence:
 			c.handleRoomPresence(evt)
+		case *pb.ServerEvent_Heartbeat:
+			c.handleHeartbeat(evt)
 		}
 	}
 

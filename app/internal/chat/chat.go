@@ -35,6 +35,7 @@ func New(in Input) error {
 	uc := usecase.New(roomMemberRepo, roomRepo, messageRepo)
 
 	unarySrv, streamSrv := server.New(in.Log, in.Server, uc)
+
 	unarySrv.Register()
 	streamSrv.Register()
 

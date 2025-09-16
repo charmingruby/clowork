@@ -2,6 +2,7 @@ package stream
 
 import (
 	"context"
+	"time"
 
 	"github.com/charmingruby/clowork/api/proto/pb"
 	"github.com/charmingruby/clowork/internal/chat/usecase"
@@ -36,6 +37,7 @@ func (s *Server) handleJoinRoom(
 		memberID: memberID,
 		nickname: payload.GetNickname(),
 		hostname: payload.GetHostname(),
+		lastBeat: time.Now(),
 		stream:   stream,
 	}
 

@@ -67,8 +67,9 @@ message RequestPresence {
 }
 
 message Heartbeat {
-    string member_id = 1;
-    google.protobuf.Timestamp beat_at = 2;
+    string room_id = 1;
+    optional string member_id = 2;
+    google.protobuf.Timestamp beat_at = 3;
 }
 
 message RoomJoined {
