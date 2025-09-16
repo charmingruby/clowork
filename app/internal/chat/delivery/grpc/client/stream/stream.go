@@ -38,6 +38,8 @@ func (c *Client) Stream() error {
 			c.handleRoomLeft(evt)
 		case *pb.ServerEvent_MessagePosted:
 			c.handleMessagePosted(evt)
+		case *pb.ServerEvent_RoomPresence:
+			c.handleRoomPresence(evt)
 		}
 	}
 

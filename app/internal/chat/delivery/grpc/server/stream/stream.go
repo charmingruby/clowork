@@ -39,25 +39,61 @@ func (s *Server) Stream(stream grpc.BidiStreamingServer[pb.ClientEvent, pb.Serve
 				s.log.Error("handle send message error", "error", err.Error())
 				continue
 			}
+		case *pb.ClientEvent_RequestPresence:
+			if err := s.handleRequestPresence(stream, evt); err != nil {
+				s.log.Error("handle request presence error", "error", err.Error())
+				continue
+			}
 		}
 	}
 }
 
-func (s *Server) broadcast(evt *pb.ServerEvent, roomID, excludedMemberID string) {
-	hasExclusion := excludedMemberID != ""
+func (s *Server) broadcast(evt *pb.ServerEvent, roomID, targetMemberID string) {
+	hasTarget := targetMemberID != ""
 
 	if room := s.rooms[roomID]; room != nil {
 		for memberID, sess := range room {
-			if !hasExclusion || (hasExclusion && memberID != excludedMemberID) {
+			if !hasTarget || (hasTarget && memberID != targetMemberID) {
 				if err := sess.stream.Send(evt); err != nil {
 					s.log.Error("broadcast error",
 						"error", err.Error(),
-						"room_id", room,
+						"room_id", roomID,
 						"member_id", memberID,
 						"event", evt.GetEvent(),
 					)
 				}
 			}
 		}
+	}
+}
+
+func (s *Server) sendTo(
+	evt *pb.ServerEvent,
+	customStream grpc.BidiStreamingServer[pb.ClientEvent, pb.ServerEvent],
+	roomID,
+	memberID string,
+) {
+	if customStream != nil {
+		if err := customStream.Send(evt); err != nil {
+			s.log.Error("broadcast error",
+				"error", err.Error(),
+				"room_id", roomID,
+				"member_id", memberID,
+				"event", evt.GetEvent(),
+			)
+		}
+
+		return
+	}
+
+	sess := s.rooms[roomID][memberID]
+
+	if err := sess.stream.Send(evt); err != nil {
+		s.log.Error("broadcast error",
+			"error", err.Error(),
+			"room_id", roomID,
+			"member_id", memberID,
+			"event", evt.GetEvent(),
+		)
 	}
 }

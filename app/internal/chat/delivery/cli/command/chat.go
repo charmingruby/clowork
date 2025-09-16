@@ -17,7 +17,7 @@ var ErrQuit = errors.New("quit signal")
 
 func (c *Command) Chat() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "join",
+		Use: "chat",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			roomID, err := cmd.Flags().GetString("room")
 			if err != nil {
@@ -104,6 +104,12 @@ func (c *Command) handleInput(input string) error {
 
 	case "clear", "c":
 		cli.Clear()
+		cli.Cursor()
+
+	case "online", "on":
+		if err := c.client.RequestPresence(); err != nil {
+			cli.Print(err.Error(), 1, true, cli.FailureSymbol)
+		}
 		cli.Cursor()
 
 	default:

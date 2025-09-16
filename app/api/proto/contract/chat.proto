@@ -32,10 +32,9 @@ message ServerEvent {
         RoomJoined room_joined = 2;
         RoomLeft room_left = 3;
         MessagePosted message_posted = 4;
-        PresenceUpdate presence_update = 5;
+        RoomPresence room_presence = 5;
         Heartbeat heartbeat = 6;
         Ack ack = 7;
-
     }
 }
 
@@ -64,6 +63,7 @@ message SendMessage {
 
 message RequestPresence {
     string room_id = 1;
+    string sender_id = 2;
 }
 
 message Heartbeat {
@@ -88,9 +88,13 @@ message MessagePosted {
     string sender_nickname = 3;
 }
 
-message PresenceUpdate {
-    string room_id = 1;
-    repeated RoomMember members = 2;
+message RoomPresence {
+    repeated Presence presences = 1;
+}
+
+message Presence {
+    string nickname = 1;
+    string hostname = 2;
 }
 
 // Unary Contracts
