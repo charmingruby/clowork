@@ -41,7 +41,9 @@ func (c *Client) Stream() error {
 		case *pb.ServerEvent_RoomPresence:
 			c.handleRoomPresence(evt)
 		case *pb.ServerEvent_Heartbeat:
-			c.handleHeartbeat(evt)
+			if err := c.handleHeartbeat(evt); err != nil {
+				c.msgCh <- err.Error()
+			}
 		}
 	}
 

@@ -20,10 +20,10 @@ type Server struct {
 
 type session struct {
 	stream   grpc.BidiStreamingServer[pb.ClientEvent, pb.ServerEvent]
+	lastBeat time.Time
 	memberID string
 	nickname string
 	hostname string
-	lastBeat time.Time
 }
 
 func New(log *logger.Logger, srv *grpc.Server, usecase usecase.Service) *Server {
