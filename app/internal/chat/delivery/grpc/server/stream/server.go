@@ -12,10 +12,11 @@ import (
 type Server struct {
 	pb.UnimplementedChatStreamServer
 
-	log     *logger.Logger
-	server  *grpc.Server
-	rooms   map[string]map[string]*session // room id -> member id -> session
-	usecase usecase.Service
+	log      *logger.Logger
+	server   *grpc.Server
+	rooms    map[string]map[string]*session // room id -> member id -> session
+	usecase  usecase.Service
+	eventSeq uint64
 }
 
 type session struct {

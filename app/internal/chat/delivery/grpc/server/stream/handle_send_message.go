@@ -25,7 +25,7 @@ func (s *Server) handleSendMessage(
 	sess := s.rooms[payload.GetRoomId()][payload.GetMemberId()]
 
 	s.broadcast(&pb.ServerEvent{
-		EventSeq: 0,
+		EventSeq: s.nextSeq(),
 		Event: &pb.ServerEvent_MessagePosted{
 			MessagePosted: &pb.MessagePosted{
 				Id:             messageID,

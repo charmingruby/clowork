@@ -2,13 +2,9 @@ package stream
 
 import (
 	"github.com/charmingruby/clowork/api/proto/pb"
-	"google.golang.org/grpc"
 )
 
-func (s *Server) handleRequestPresence(
-	stream grpc.BidiStreamingServer[pb.ClientEvent, pb.ServerEvent],
-	evt *pb.ClientEvent_RequestPresence,
-) error {
+func (s *Server) handleRequestPresence(evt *pb.ClientEvent_RequestPresence) {
 	payload := evt.RequestPresence
 
 	var presences []*pb.Presence
@@ -23,7 +19,7 @@ func (s *Server) handleRequestPresence(
 
 	s.sendTo(
 		&pb.ServerEvent{
-			EventSeq: 0,
+			EventSeq: s.nextSeq(),
 			Event: &pb.ServerEvent_RoomPresence{
 				RoomPresence: &pb.RoomPresence{
 					Presences: presences,
@@ -34,13 +30,4 @@ func (s *Server) handleRequestPresence(
 		payload.GetRoomId(),
 		payload.GetSenderId(),
 	)
-
-	return stream.Send(&pb.ServerEvent{
-		EventSeq: 0,
-		Event: &pb.ServerEvent_RoomPresence{
-			RoomPresence: &pb.RoomPresence{
-				Presences: presences,
-			},
-		},
-	})
 }

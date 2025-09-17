@@ -31,6 +31,8 @@ func (c *Client) Stream() error {
 			return err
 		}
 
+		c.lastEventSeq = sevt.GetEventSeq()
+
 		switch evt := sevt.GetEvent().(type) {
 		case *pb.ServerEvent_RoomJoined:
 			c.handleRoomJoined(evt)
@@ -40,6 +42,8 @@ func (c *Client) Stream() error {
 			c.handleMessagePosted(evt)
 		case *pb.ServerEvent_RoomPresence:
 			c.handleRoomPresence(evt)
+		case *pb.ServerEvent_Ack:
+			c.handleAck(evt)
 		case *pb.ServerEvent_Heartbeat:
 			if err := c.handleHeartbeat(evt); err != nil {
 				c.msgCh <- err.Error()

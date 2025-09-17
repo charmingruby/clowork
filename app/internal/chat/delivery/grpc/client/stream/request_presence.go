@@ -8,7 +8,7 @@ import (
 func (c *Client) RequestPresence() error {
 	return c.stream.Send(&pb.ClientEvent{
 		ClientMsgId:  core.NewID(),
-		LastEventSeq: 0,
+		LastEventSeq: c.lastEventSeq,
 		Event: &pb.ClientEvent_RequestPresence{
 			RequestPresence: &pb.RequestPresence{
 				RoomId:   c.session.currentRoomID,

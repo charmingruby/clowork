@@ -11,7 +11,7 @@ func (c *Client) handleHeartbeat(evt *pb.ServerEvent_Heartbeat) error {
 
 	return c.stream.Send(&pb.ClientEvent{
 		ClientMsgId:  core.NewID(),
-		LastEventSeq: 0,
+		LastEventSeq: c.lastEventSeq,
 		Event: &pb.ClientEvent_Heartbeat{
 			Heartbeat: &pb.Heartbeat{
 				MemberId: &c.session.memberID,

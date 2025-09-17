@@ -15,7 +15,7 @@ func (s *Server) heartbeatLoop() {
 		for roomID := range s.rooms {
 			s.broadcast(
 				&pb.ServerEvent{
-					EventSeq: 0,
+					EventSeq: s.nextSeq(),
 					Event: &pb.ServerEvent_Heartbeat{
 						Heartbeat: &pb.Heartbeat{
 							RoomId: roomID,
@@ -44,7 +44,7 @@ func (s *Server) monitorHeartbeats() {
 
 					s.broadcast(
 						&pb.ServerEvent{
-							EventSeq: 0,
+							EventSeq: s.nextSeq(),
 							Event: &pb.ServerEvent_RoomLeft{
 								RoomLeft: &pb.RoomLeft{
 									RoomId:   roomID,

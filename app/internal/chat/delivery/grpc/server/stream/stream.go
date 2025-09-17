@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"sync/atomic"
 
 	"github.com/charmingruby/clowork/api/proto/pb"
 	"google.golang.org/grpc"
@@ -25,29 +26,64 @@ func (s *Server) Stream(stream grpc.BidiStreamingServer[pb.ClientEvent, pb.Serve
 
 		switch evt := cevt.GetEvent().(type) {
 		case *pb.ClientEvent_JoinRoom:
-			if err := s.handleJoinRoom(ctx, stream, evt); err != nil {
+			err := s.handleJoinRoom(ctx, stream, evt)
+			if err != nil {
 				s.log.Error("handle join room error", "error", err.Error())
-				continue
+			}
+
+			if err := s.sendAck(stream, cevt.GetClientMsgId(), err); err != nil {
+				s.log.Error("ack error", "error", err.Error())
 			}
 		case *pb.ClientEvent_LeaveRoom:
-			if err := s.handleLeaveRoom(ctx, evt); err != nil {
+			err := s.handleLeaveRoom(ctx, evt)
+			if err != nil {
 				s.log.Error("handle leave room error", "error", err.Error())
-				continue
+			}
+
+			if err := s.sendAck(stream, cevt.GetClientMsgId(), err); err != nil {
+				s.log.Error("ack error", "error", err.Error())
 			}
 		case *pb.ClientEvent_SendMessage:
-			if err := s.handleSendMessage(ctx, evt); err != nil {
+			err := s.handleSendMessage(ctx, evt)
+			if err != nil {
 				s.log.Error("handle send message error", "error", err.Error())
-				continue
+			}
+
+			if err := s.sendAck(stream, cevt.GetClientMsgId(), err); err != nil {
+				s.log.Error("ack error", "error", err.Error())
 			}
 		case *pb.ClientEvent_RequestPresence:
-			if err := s.handleRequestPresence(stream, evt); err != nil {
-				s.log.Error("handle request presence error", "error", err.Error())
-				continue
+			s.handleRequestPresence(evt)
+
+			if err := s.sendAck(stream, cevt.GetClientMsgId(), nil); err != nil {
+				s.log.Error("ack error", "error", err.Error())
 			}
 		case *pb.ClientEvent_Heartbeat:
 			s.handleHeartbeat(evt)
 		}
 	}
+}
+
+func (s *Server) sendAck(
+	stream grpc.BidiStreamingServer[pb.ClientEvent, pb.ServerEvent],
+	clientMsgID string,
+	err error,
+) error {
+	var errMsg string
+	if err != nil {
+		errMsg = err.Error()
+	}
+
+	return stream.Send(&pb.ServerEvent{
+		EventSeq: s.nextSeq(),
+		Event: &pb.ServerEvent_Ack{
+			Ack: &pb.Ack{
+				ClientMsgId: clientMsgID,
+				Success:     err == nil,
+				Error:       errMsg,
+			},
+		},
+	})
 }
 
 func (s *Server) broadcast(evt *pb.ServerEvent, roomID, targetMemberID string) {
@@ -97,4 +133,8 @@ func (s *Server) sendTo(
 			"event", evt.GetEvent(),
 		)
 	}
+}
+
+func (s *Server) nextSeq() uint64 {
+	return atomic.AddUint64(&s.eventSeq, 1)
 }

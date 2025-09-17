@@ -45,7 +45,7 @@ func (s *Server) handleJoinRoom(
 
 	s.sendTo(
 		&pb.ServerEvent{
-			EventSeq: 0,
+			EventSeq: s.nextSeq(),
 			Event: &pb.ServerEvent_RoomJoined{
 				RoomJoined: &pb.RoomJoined{
 					RoomId:   payload.GetRoomId(),
@@ -60,7 +60,7 @@ func (s *Server) handleJoinRoom(
 	)
 
 	s.broadcast(&pb.ServerEvent{
-		EventSeq: 0,
+		EventSeq: s.nextSeq(),
 		Event: &pb.ServerEvent_RoomJoined{
 			RoomJoined: &pb.RoomJoined{
 				RoomId:   payload.GetRoomId(),

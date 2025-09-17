@@ -8,7 +8,7 @@ import (
 func (c *Client) SendMessage(content string) error {
 	return c.stream.Send(&pb.ClientEvent{
 		ClientMsgId:  core.NewID(),
-		LastEventSeq: 0,
+		LastEventSeq: c.lastEventSeq,
 		Event: &pb.ClientEvent_SendMessage{
 			SendMessage: &pb.SendMessage{
 				RoomId:   c.session.currentRoomID,

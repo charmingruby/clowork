@@ -24,7 +24,7 @@ func (s *Server) handleLeaveRoom(
 	sess := s.rooms[payload.GetRoomId()][payload.GetMemberId()]
 
 	s.broadcast(&pb.ServerEvent{
-		EventSeq: 0,
+		EventSeq: s.nextSeq(),
 		Event: &pb.ServerEvent_RoomLeft{
 			RoomLeft: &pb.RoomLeft{
 				RoomId:   payload.GetRoomId(),
